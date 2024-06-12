@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.protectboard.ProtectBoardFileMapper">
+    <select id="selectFiles" parameterType="int" resultType="com.project.poinhanshin.domain.protectboard.ProtectBoardFileDto">
+        SELECT protectboardfileno , reg_date , original_file_name , stored_file_name , protectboardno , fileSize
+        FROM protectboardFile
+        WHERE protectboardno = #{protectboardno}
+    </select>
+    <select id="selectFilesName">
+        SELECT stored_file_name
+        FROM protectboardFile
+        WHERE protectboardno = #{protectboardno}
+    </select>
+    <insert id="insertFiles" parameterType="com.project.poinhanshin.domain.protectboard.ProtectBoardFileDto">
+        INSERT INTO protectboardFile ( reg_date , original_file_name , stored_file_name , protectboardno , fileSize)
+        VALUES( now() , #{original_file_name} , #{stored_file_name} , #{protectboardno} , #{fileSize} )
+    </insert>
+    <delete id="deleteFile" parameterType="string">
+        DELETE FROM protectboardFile
+        WHERE stored_file_name = #{stored_file_name}
+    </delete>
+    <select id="selectCnt" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM protectboardFile
+        WHERE protectboardno = #{protectboardno}
+    </select>
+</mapper>

@@ -1,0 +1,222 @@
+<!DOCTYPE HTML>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>임보자게시글 등록</title>
+    <!-- css로드 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/commonstyle.css" rel="stylesheet">
+    <!-- datepicker css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!--script-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    
+    <!-- datepicker Script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="bootstrap-datepicker.ko.js"></script>
+</head>
+<style>
+
+</style>
+<script th:if="${msg} == 'NO_INSERT'">alert("게시글을 등록하지 못했습니다.")</script>
+<script th:if="${msg} == 'FAIL_INSERT'">alert("게시글을 등록 실패했습니다.")</script>
+<body layout:fragment="content">
+<div class="page">
+    <form th:action="@{/protectboard/write}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="page" th:value="${page}" />
+        <input type="hidden" name="pageSize" th:value="${pageSize}" />
+        <input type="hidden" name="protectboard_userno" th:value="${LoginId}" />
+        <input type="hidden" name="protectboard_ani_category" value="false">
+        <input type="hidden" name="protectstatus" value="false">
+
+        <section class="container">
+              <div class="row">
+                <label for="date" class="col-sm-2 col-form-label"></label>
+                  <div class="col">
+                        <div class="input-group">
+                            <span class="input-group-text" id="inputGroup-sizing-sm">품종</span>
+                            <input type="text" name="breeds" class="form-control" id="inputBreeds" placeholder="품종을 입력해주세요">
+                        </div>
+                  </div>
+
+                  <div class="col">
+                    <div class="input-group date" id="datepicker">
+                        <span class="input-group-append">
+                            <span class="input-group-text bg-light d-block">
+                            <i class="fa fa-calendar"></i>
+                            </span>
+                        </span>
+                      <input type="text" class="form-control" id="date" name="deadline" placeholder="날짜를 선택해주세요"/>
+                    </div>
+                  </div>
+              </div>
+        </section>
+        <div class="form-group row p-2">
+            <label for="inputContent" class="col-sm-2 col-form-label"><strong>내용</strong></label>
+            <div class="col-sm-10">
+          <textarea
+                  type="text"
+                  name="protectboard_content"
+                  class="form-control"
+                  id="inputContent"
+                  style="height: 300px;"
+          ></textarea>
+            </div>
+        </div>
+
+        <div id="image_preview">
+            <div class="input-group mb-3 p-2">
+                <input type="file" id="btnAtt" class="form-control" name="files[]" multiple="multiple" />
+            </div>
+        </div>
+
+        <div id='att_zone'>
+
+        </div>
+        <div class="row p-5">
+            <div class="col-auto mr-auto"></div>
+            <div class="d-grid col-5 mx-auto">
+                <input class="btn btn-primary" type="submit" role="button" value="등록" />
+            </div>
+        </div>
+        <button type="button" class="btn btn-secondary"
+                th:onclick="|location.href='@{/protectboard/list(page = ${page} , pageSize = ${pageSize} )}'|">목록
+        </button>
+    </form>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="bootstrap-datepicker.ko.js"></script>
+<script type="text/javascript">
+var submitted = false;
+
+$(document).ready(function() {
+  $("form").submit(function() {
+
+    submitted = true;
+  });
+
+  window.onbeforeunload = function () {
+    if (!submitted) {
+      return 'Do you really want to leave the page?';
+    }
+
+  }
+});
+
+
+//데이터픽커
+$(function(){
+  $('#datepicker').datepicker({
+    format:"yyyy-mm-dd",
+    language : "ko"
+  });
+});
+
+(/* att_zone : 이미지들이 들어갈 위치 id, btn : file tag id */
+  imageView = function imageView(att_zone, btn){
+var attZone = document.getElementById(att_zone);
+var btnAtt = document.getElementById(btn)
+var sel_files = [];
+
+// 이미지와 체크 박스를 감싸고 있는 div 속성
+var div_style = 'display:inline-block;position:relative;'
+              + 'width:150px;height:120px;margin:5px;border:1px solid #8b00ff;z-index:1';
+// 미리보기 이미지 속성
+var img_style = 'width:100%;height:100%;z-index:none';
+// 이미지안에 표시되는 체크박스의 속성
+var chk_style = 'width:30px;height:30px;position:absolute;font-size:20px;'
+              + 'right:0px;bottom:0px;z-index:999;background-color:rgba(255,255,255,0.1);color:#f00';
+
+btnAtt.onchange = function(e){
+  var files = e.target.files;
+  var fileArr = Array.prototype.slice.call(files)
+  for(f of fileArr){
+    imageLoader(f);
+  }
+}
+
+
+// 탐색기에서 드래그앤 드롭 사용
+attZone.addEventListener('dragenter', function(e){
+  e.preventDefault();
+  e.stopPropagation();
+}, false)
+
+attZone.addEventListener('dragover', function(e){
+  e.preventDefault();
+  e.stopPropagation();
+
+}, false)
+
+attZone.addEventListener('drop', function(e){
+  var files = {};
+  e.preventDefault();
+  e.stopPropagation();
+  var dt = e.dataTransfer;
+  files = dt.files;
+  for(f of files){
+    imageLoader(f);
+  }
+
+}, false)
+
+
+
+/*첨부된 이미지를 배열에 넣고 미리보기 */
+imageLoader = function(file){
+  sel_files.push(file);
+  var reader = new FileReader();
+  reader.onload = function(ee){
+    let img = document.createElement('img')
+    img.setAttribute('style', img_style)
+    img.src = ee.target.result;
+    attZone.appendChild(makeDiv(img, file));
+  }
+
+  reader.readAsDataURL(file);
+}
+
+/*첨부된 파일이 있는 경우 checkbox와 함께 attZone에 추가할 div를 만들어 반환 */
+makeDiv = function(img, file){
+  var div = document.createElement('div')
+  div.setAttribute('style', div_style)
+
+  var btn = document.createElement('input')
+  btn.setAttribute('type', 'button')
+  btn.setAttribute('value', 'x')
+  btn.setAttribute('delFile', file.name);
+  btn.setAttribute('style', chk_style);
+  btn.onclick = function(ev){
+    var ele = ev.srcElement;
+    var delFile = ele.getAttribute('delFile');
+    for(var i=0 ;i<sel_files.length; i++){
+      if(delFile== sel_files[i].name){
+        sel_files.splice(i, 1);
+      }
+    }
+
+    dt = new DataTransfer();
+    for(f in sel_files) {
+      var file = sel_files[f];
+      dt.items.add(file);
+    }
+    btnAtt.files = dt.files;
+    var p = ele.parentNode;
+    attZone.removeChild(p)
+  }
+  div.appendChild(img)
+  div.appendChild(btn)
+  return div
+}
+}
+)('att_zone', 'btnAtt')
+  </script>
+</body>
+</html>

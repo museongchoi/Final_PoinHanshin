@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>상세정보</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style>
+        @media (min-width: 768px) {
+      .page {
+        width: 600px;
+      }
+    }
+
+    @media (min-width: 992px) {
+      .page {
+        width: 940px;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .page {
+        width: 940px;
+      }
+    }
+
+  .page {
+        margin: 0 auto;
+        padding: 50px;
+        border-left: 1px solid black;
+        border-right: 1px solid black;
+    }
+</style>
+<body layout:fragment="content">
+
+
+<fieldset class="page">
+
+
+    <div class="card text-center">
+        <div class="card-header">
+            <h4><span class="badge rounded-pill"  style="background-color:#6F61C0;" th:text="${shelter.careNm}"></span></h4>
+        </div>
+        <div class="card-body">
+
+            <div class="row grid gap-3 ">
+
+                <div class="card mb-3 mx-auto" style="max-width: 25rem;background-color:#AFB4FF;color:black;">
+                    <div class="card-header">시설정보</div>
+                    <div class="card-body">
+                        <p th:text="'관리기관명 : ' +  ${shelter.orgNm}">관리기관명 :</p>
+                        <p th:text="'전화번호 : '+${shelter.careTel}">전화번호 :</p>
+                        <p th:text="'동물보호센터유형 : ' +${shelter.divisionNm}">동물보호센터유형 :</p>
+                        <p th:text="'구조대상동물 : ' +${shelter.saveTrgtAnimal}">구조대상동물 :</p>
+                        <p th:text="'수의사인원수 : '+${shelter.vetPersonCnt}">수의사인원수 :</p>
+                        <p th:text="'사양관리사인원수 : '+${shelter.specsPersonCnt}">사양관리사인원수 :</p>
+                        <p th:text="'진료실수 : '+${shelter.medicalCnt}">진료실수 :</p>
+                        <p th:text="'사육실수 : '+${shelter.breedCnt}">사육실수 :</p>
+                        <p th:text="'격리실수 : '+${shelter.quarabtineCnt}">격리실수 :</p>
+                        <p th:text="'사료보관실수 : '+${shelter.feedCnt}">사료보관실수 :</p>
+                        <p th:text="'구조운반용차량보유대수 : '+${shelter.transCarCnt}">구조운반용차량보유대수 :</p>
+                        <p th:text="'동물보호센터지정일자 : '+${shelter.dsignationDate}">동물보호센터지정일자 :</p>
+               </div>
+                </div>
+
+                 <div class="card mb-3 mx-auto" style="max-width: 25rem;background-color:#AFB4FF;color:black;">
+                    <div class="card-header">운영시간</div>
+                    <div class="card-body">
+                        <p class="card-text" th:text="'휴무일 : '+${shelter.closeDay}">휴무일 :</p>
+                        <p th:text="'평일운영시작시각 : '+${shelter.weekOprStime}">평일운영시작시각 :</p>
+                        <p th:text="'평일운영종료시각 : '+${shelter.weekOprEtime}">평일운영종료시각 : </p>
+                        <p th:text="'평일분양시작시간 : '+${shelter.weekCellStime}">평일분양시작시간 :</p>
+                        <p th:text="'평일분양종료시간 : '+${shelter.weekCellEtime}">평일분양종료시간 :</p>
+                        <br>
+                        <p th:text="'주말운영시작시간 : '+${shelter.weekendOprStime}">주말운영시작시간 :</p>
+                        <p th:text="'주말운영종료시간 : '+${shelter.weekendOprEtime}">주말운영종료시간 :</p>
+                        <p th:text="'주말분양시작시간 : '+${shelter.weekendCellStime}">주말분양시작시간 :</p>
+                        <p th:text="'주말분양종료시간 : '+${shelter.weekendCellEtime}">주말분양종료시간 :</p>
+                   </div>
+                 </div>
+
+            </div>
+
+            <div class="row grid gap-3">
+
+                    <div class="card mb-3 mx-auto" style="max-width: 25rem;background-color:#AFB4FF;color:black;">
+                        <div class="card-header">위치정보</div>
+                        <div class="card-body">
+                            <p th:text="'소재지도로명주소 : ' +${shelter.careAddr}">소재지도로명주소 :</p>
+                            <p th:text="'소재지지번주소 : ' +${shelter.jibunAddr}">소재지지번주소 :</p>
+                            <p th:text="'위도 : ' +${shelter.lat}">위도 :</p>
+                            <p th:text="'경도 : ' +${shelter.lng}">경도 :</p>
+                     </div>
+                    </div>
+
+                    <div class="card text-bg-Light mb-3 mx-auto" style="max-width: 25rem;">
+                        <div class="card-body">
+                            <div id="map" style="width:100%;height:350px;">
+
+                            </div>
+                        </div>
+                    </div>
+
+            </div>
+
+            <div class="card-footer text-body-secondary">
+                <p th:text="'데이터기준일자 : '+${shelter.dataStdDt}">데이터기준일자 :</p>
+            </div>
+        </div>
+    </div>
+
+<!--    <p th:text="'동물보호센터 : ' + ${shelter.careNm}"></p>-->
+<!--    <p th:text="'관리기관명 : ' +  ${shelter.orgNm}"></p>-->
+<!--    <p th:text="'동물보호센터유형 : ' +${shelter.divisionNm}"></p>-->
+<!--    <p th:text="'구조대상동물 : ' +${shelter.saveTrgtAnimal}"></p>-->
+<!--    <p th:text="'소재지도로명주소 : ' +${shelter.careAddr}"></p>-->
+<!--    <p th:text="'소재지지번주소 : ' +${shelter.jibunAddr}"></p>-->
+<!--    <p th:text="'위도 : ' +${shelter.lat}"></p>-->
+<!--    <p th:text="'경도 : ' +${shelter.lng}"></p>-->
+<!--    <p th:text="'동물보호센터지정일자 : '+${shelter.dsignationDate}"></p>-->
+<!--    <p th:text="'평일운영시작시각 : '+${shelter.weekOprStime}"></p>-->
+<!--    <p th:text="'평일운영종료시각 : '+${shelter.weekOprEtime}"></p>-->
+<!--    <p th:text="'평일분양시작시간 : '+${shelter.weekCellStime}"></p>-->
+<!--    <p th:text="'평일분양종료시간 : '+${shelter.weekCellEtime}"></p>-->
+<!--    <p th:text="'주말운영시작시간 : '+${shelter.weekendOprStime}"></p>-->
+<!--    <p th:text="'주말운영종료시간 : '+${shelter.weekendOprEtime}"></p>-->
+<!--    <p th:text="'주말분양시작시간 : '+${shelter.weekendCellStime}"></p>-->
+<!--    <p th:text="'주말분양종료시간 : '+${shelter.weekendCellEtime}"></p>-->
+<!--    <p th:text="'휴무일 : '+${shelter.closeDay}"></p>-->
+<!--    <p th:text="'수의사인원수 : '+${shelter.vetPersonCnt}"></p>-->
+<!--    <p th:text="'사양관리사인원수 : '+${shelter.specsPersonCnt}"></p>-->
+<!--    <p th:text="'진료실수 : '+${shelter.medicalCnt}"></p>-->
+<!--    <p th:text="'사육실수 : '+${shelter.breedCnt}"></p>-->
+<!--    <p th:text="'격리실수 : '+${shelter.quarabtineCnt}"></p>-->
+<!--    <p th:text="'사료보관실수 : '+${shelter.feedCnt}"></p>-->
+<!--    <p th:text="'구조운반용차량보유대수 : '+${shelter.transCarCnt}"></p>-->
+<!--    <p th:text="'전화번호 : '+${shelter.careTel}"></p>-->
+<!--    <p th:text="'데이터기준일자 : '+${shelter.dataStdDt}"></p>-->
+</fieldset>
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=9812c9a3072003e9084347785d8c83a0"></script>
+<script th:inline="javascript">
+const data_name = [[${shelter.careNm}]];
+const data_lat = [[${shelter.lat}]];
+const data_lng = [[${shelter.lng}]];
+console.log(data_lat);
+console.log(data_lng);
+
+
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+    mapOption = {
+        center: new kakao.maps.LatLng(data_lat, data_lng), // 지도의 중심좌표
+        level: 1 // 지도의 확대 레벨
+    };
+
+var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+
+var markerPosition  = new kakao.maps.LatLng(data_lat, data_lng);
+var marker = new kakao.maps.Marker({
+    position: markerPosition
+});
+
+marker.setMap(map);
+
+var iwContent = '<div style="padding:5px;">길찾기로 이동합니다.</div>';
+
+//마우스커서 오버시 인포윈도우 생성
+
+var infowindow = new kakao.maps.InfoWindow({
+    content : iwContent
+});
+
+
+// 마커 마우스오버 이벤트
+kakao.maps.event.addListener(marker, 'mouseover', function() {
+  // 마커에 마우스오버 이벤트가 발생하면 인포윈도우를 마커위에 표시합니다
+    infowindow.open(map, marker);
+});
+// 마커 마우스아웃 이벤트
+kakao.maps.event.addListener(marker, 'mouseout', function() {
+    // 마커에 마우스아웃 이벤트가 발생하면 인포윈도우를 제거합니다
+    infowindow.close();
+});
+//마커 클릭 이벤트
+kakao.maps.event.addListener(marker, 'click', function() {
+      location.href="https://map.kakao.com/link/to/"+data_name+","+data_lat+","+data_lng;
+});
+
+<!--console.log(markerPosition);-->
+<!--console.log(marker);-->
+
+</script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>상세 게시물 보기</title>
+  <link rel="stylesheet" type="text/css" href="/css/map/mapdetail.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Black+Han+Sans:400" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic+Coding:400" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:800" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body layout:fragment="content">
+ <div class="container">
+  <div class="post-list">
+    <div class="post" >
+      <div class="post-header">
+        <div class="header-left">
+        <div style="display: flex; flex-direction: row;">
+    <span class="animal-type">
+        <!-- 고양이=1(true), 강아지=0(false) -->
+        <form id="form" action="" method="">
+            <!-- 페이지 정보 및 로그인 정보-->
+            <!--<input type="hidden" name="page" th:value="${sc.page}"/>
+            <input type="hidden" name="pageSize" th:value="${sc.pageSize}"/>
+            <input type="hidden" name="keyword" th:value="${sc.keyword}"/>
+            <input type="hidden" name="ani_category" th:value="${sc.ani_category}"/>
+            <input type="hidden" name="mapboardno" th:value="${mapBoardDto.mapboardno}"/>
+            <input type="hidden" name="mapboard_userno" th:value="${mapBoardDto.mapboard_userno}"/>
+            <input type="hidden" name="loginUserNo" th:value="${loginUser.userno}"/>
+            <input th:if="${loginUser != null}" type="hidden" name="loginUserNo" id="loginUser" th:value="${loginUser.userno}"/>
+            <input th:unless="${loginUser != null}" type="hidden" name="loginUserNo"  value="0"/>-->
+            <!--<input type="hidden" name="missingAddress" th:value="${sc.ani_category}"/>-->
+            <!--<input type="hidden" name="loginNo" th:value="${loginUser}"/>-->
+            <input type="hidden" name="loginUser" th:value="${loginUser}"/>
+            <input type="hidden" name="page" th:value="${sc.getPage()}" />
+            <input type="hidden" name="pageSize" th:value="${sc.getPageSize()}" />
+            <input type="hidden" name="keyword" th:value="${sc.getKeyword()}"/>
+            <input type="hidden" name="ani_category" th:value="${sc.ani_category}" />
+            <input type="hidden" name="mapboardno" th:value="${mapBoardDto.mapboardno}"/>
+            <input type="hidden" name="mapboard_userno" th:value="${mapBoardDto.mapboard_userno}"/>
+            <input th:if="${loginUser != null }" type="hidden" name="loginUserNo" id=" " th:value="${loginUser.userno}"/>
+            <input th:unless="${loginUser != null }" type="hidden" name="loginUserNo" value="0" />
+
+        </form>
+
+        <span th:if="${mapBoardDto.mapboard_ani_category == true}" class="badge text-bg-primary">고양이</span>
+        <span th:unless="${mapBoardDto.mapboard_ani_category == true}" class="badge rounded-pill text-bg-secondary">강아지</span>
+
+    </span>
+          <span class="writertype">
+        <span th:if="${mapBoardDto.writertype == false}" class="badge text-bg-danger">신고자</span>
+        <span th:unless="${mapBoardDto.writertype == false}" class="badge rounded-pill text-bg-secondary">발견자</span>
+    </span>
+        </div>
+        </div>
+<!--        <strong class="animal-type" th:text="${mapboard.mapboard_ani_category}"></strong>-->
+        <div class="row">
+          <div class="form-floating mb-3">
+            <input type="text" readonly class="form-control-plaintext main-text"
+                   id="floatingEmptyPlaintextInput"
+                   th:value="${mapBoardDto.mapboard_title}">
+            <label for="floatingEmptyPlaintextInput"></label>
+          </div>
+        </div>
+<!--        <span class="title" th:text="'제목: ' + ${mapboard.missingaddress}">제목: </span>-->
+          <i class="fa-solid fa-location-dot"><span class="address my-2 lh-base" th:text="' 실종/발견 장소: ' + ${mapBoardDto.missingaddress}" style="color: #4d4d9a;">실종/발견 장소: </span></i>
+          <i class="fa-solid fa-calendar-days"><span class="time lh-base" th:text="'실종/발견 날짜 및 시간: ' + ${#dates.format(mapBoardDto.missingtime, 'yyyy년 MM월 dd일 (HH:mm:ss) ')}" style="color: #4d4d9a;">실종/발견 날짜 및 시간: </span></i>
+      </div>
+        <!-- 즐겨찾기/ 신고하기 아이콘 버튼-->
+        <div class="header-right mb-2"  th:if="${loginUser}">
+            <button class="icon-btn" data-toggle="tooltip" data-placement="top" title="즐겨찾기" id="favorite"><i class="fa-solid fa-star fa-2xl" style="color: #ffdd00;"></i></button>
+            <!--          <button class="icon-btn" data-toggle="tooltip" data-placement="top" title="신고하기"><i class="fa-solid fa-triangle-exclamation fa-2xl" style="color: #ff0000;"></i></button>-->
+        </div>
+      <div class="post-content">
+        <p th:text="${mapBoardDto.mapboard_content}">
+          Woo</p>
+      </div>
+        <div class="figure" th:if="${mapBoardDto.fileAttached == 1}" th:each="fileName : ${mapBoardDto.storedFileName}">
+            <!--<img th:src="${mapBoardDto.}" th:alt="${mapboard.animalType}" alt="빈이미지">-->
+            <img th:src="@{|/upload/mapBoard/${fileName}|}" alt="Dog">
+        </div>
+        <img th:unless="${mapBoardDto.fileAttached == 1}" src="../../static/img/mbti/image-0.png" alt="Dog">
+      <div class="footer-left">
+        <span class="mapboard_userno" th:text="'작성자: ' +${mapBoardDto.id}">작성자: </span>
+        <span class="reg_date" th:text="'작성일: ' +${#dates.format(mapBoardDto.mapboard_reg_date, 'yyyy년 MM월 dd일 (HH:mm:ss) ')}">작성일: </span>
+      </div>
+      <div class="footer-right">
+      </div>
+      <div class="post-buttons">
+          <button class="btn btn-secondary" onclick="window.location.href='/map/list'">목록</button>
+          <th:block th:if="${loginUser} ? ${loginUser.userno} == ${mapBoardDto.mapboard_userno} : false ">
+          <button type="button" class="btn btn-primary"
+                  th:if="${loginUser}"
+                  th:onclick="|location.href='@{/map/modify(mapboardno = ${mapBoardDto.mapboardno} , mapboard_userno = ${mapBoardDto.mapboard_userno}  , page = ${sc.getPage} , pageSize = ${sc.getPageSize} , keyword=${sc.getKeyword} , ani_category = ${sc.getAni_category} )}'|">수정
+          </button>
+        <button class="btn btn-danger" type="button" id="removeBtn" value="delete" th:if="${loginUser}">삭제</button>
+          </th:block>
+      </div>
+    </div>
+  </div>
+</div>
+ <script th:if="${msg} == 'NotEqual'"> alert("작성자만 게시글을 수정할 수 있습니다.")</script>
+ <script th:if="${msg} == 'NO_LOGIN'"> alert("로그인이 필요합니다.")</script>
+ <script th:if="${msg} == 'NotEqualRemove'"> alert("작성자만 게시글을 수정할 수 있습니다.")</script>
+ <script>
+     /*$('#modifyBtn').on("click" ,function(){
+         if(!confirm("수정하시겠습니까 ?")) return;
+         console.log("게시물 수정 및 이미지 업로드 수행");
+
+         let form = $('#form');
+         form.attr("action" ,"/map/modify");
+         form.attr("method" , "get");
+         form.submit();
+     });*/
+
+     $('#removeBtn').on("click" ,function(){
+         if(!confirm("삭제하시겠습니까 ?")) return;
+         console.log("게시물 삭제 수행");
+
+         let form = $('#form');
+         form.attr("action" ,"/map/remove");
+         form.attr("method" , "POST");
+         form.submit();
+     });
+
+
+     // 즐겨찾기 기능 시작
+
+     let mypage_userno = $('input[name=loginUserNo]').val();
+
+     if( mypage_userno != undefined){
+         $('#favorite').on("click" , function(){
+
+             let mypage_userno = $('input[name=loginUserNo]').val();
+             let mypage_mapboardno = [[${mapBoardDto.mapboardno}]];
+             let myPageDto = {
+                 mypage_userno : mypage_userno,
+                 mypage_mapboardno: mypage_mapboardno
+             }
+
+             $.ajax({
+                 type : 'POST',
+                 url : '/favoriteUpdate',
+                 headers : {"content-type" : "application/json"},
+                 dataType : 'json',
+                 data : JSON.stringify(myPageDto),
+                 success : function(data){
+                     if(data == 0){
+                         alert("즐겨찾기 추가");
+                     } else {
+                         alert("즐겨찾기 삭제")
+                     }
+                 },
+                 error : function(){}
+             });
+         });
+     }
+
+     // 즐겨찾기 기능 끝
+
+ </script>
+</body>
+</html>

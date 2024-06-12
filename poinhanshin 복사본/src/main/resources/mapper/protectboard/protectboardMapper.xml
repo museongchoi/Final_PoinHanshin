@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.protectboard.ProtectBoardMapper">
+    <select id="searchResultCnt" parameterType="com.project.poinhanshin.domain.etc.SearchCondition" resultType="int">
+        SELECT count(*)
+        FROM protectboard
+        WHERE breeds LIKE concat('%' , #{keyword} ,'%')
+        and <include refid="aniCategoryChoose"/>
+    </select>
+    <select id="searchResultList" parameterType="com.project.poinhanshin.domain.etc.SearchCondition" resultType="com.project.poinhanshin.domain.protectboard.ProtectBoardDto">
+        SELECT u.id, p.protectboard_userno , p.protectboardno , p.protectboard_title , p.protectboard_content , p.breeds , p.protectboard_ani_category , p.protectboard_reg_date  , p.protectstatus , p.starttime , p.deadline ,  p.fileAttached
+        FROM users u, protectboard p
+        WHERE u.userno = p.protectboard_userno AND breeds LIKE concat('%' , #{keyword} ,'%') and
+        <include refid="aniCategoryChoose"/>
+        ORDER BY deadline ASC , protectboardno ASC
+        LIMIT #{offset} , #{pageSize}
+    </select>
+    <select id="selectContentOne" parameterType="int" resultType="com.project.poinhanshin.domain.protectboard.ProtectBoardDto">
+        SELECT u.id, p.protectboard_userno , p.protectboardno , p.protectboard_title , p.protectboard_content , p.breeds , p.protectboard_ani_category , p.protectboard_reg_date  , p.protectstatus , p.starttime , p.deadline ,  p.fileAttached
+        FROM users u, protectboard p
+        WHERE u.userno = p.protectboard_userno AND p.protectboardno = #{protectboardno}
+    </select>
+    <insert id="insertContent" parameterType="com.project.poinhanshin.domain.protectboard.ProtectBoardDto">
+        INSERT INTO protectboard
+            (protectboard_userno , protectboardno , protectboard_title , protectboard_content , breeds , protectboard_ani_category , protectboard_reg_date , protectstatus , starttime , deadline ,  fileAttached)
+        VALUES (#{protectboard_userno} , #{protectboardno} , #{protectboard_title} , #{protectboard_content} , #{breeds} , #{protectboard_ani_category}  , now() , #{protectstatus} , #{starttime} ,#{deadline} ,  #{fileAttached}  )
+    </insert>
+    <update id="updateContent" parameterType="map">
+        UPDATE protectboard
+        SET protectboard_title = #{protectBoardDto.protectboard_title} , protectboard_content = #{protectBoardDto.protectboard_content} ,  breeds = #{protectBoardDto.breeds} , protectboard_ani_category = #{protectBoardDto.protectboard_ani_category} , protectstatus = #{protectBoardDto.protectstatus} , starttime = #{protectBoardDto.starttime} , deadline = #{protectBoardDto.deadline} , fileAttached = #{protectBoardDto.fileAttached}
+        WHERE protectboard_userno = #{loginUser} and protectboardno = #{protectBoardDto.protectboardno}
+    </update>
+    <delete id="deleteContent" parameterType="map">
+        DELETE FROM protectboard
+        WHERE protectboard_userno = #{loginUser} and protectboardno = #{protectboardno}
+    </delete>
+    <select id="selectRecentBoardno" resultType="int" parameterType="int">
+        SELECT protectboardno
+        FROM protectboard
+        WHERE protectboard_userno = #{protectboard_userno}
+        ORDER BY protectboardno DESC
+        LIMIT 1
+    </select>
+    <update id="updateFileAttached" parameterType="map">
+        UPDATE protectboard
+        SET fileAttached = #{fileAttached}
+        WHERE protectboardno = #{protectboardno}
+    </update>
+    <select id="selectMyprotectboard" parameterType="int" resultType="com.project.poinhanshin.domain.protectboard.ProtectBoardDto">
+        SELECT u.id, p.protectboard_userno , p.protectboardno , p.protectboard_title , p.protectboard_content , p.breeds , p.protectboard_ani_category , p.protectboard_reg_date  , p.protectstatus , p.starttime , p.deadline ,  p.fileAttached
+        FROM users u, protectboard p, mypage m
+        WHERE u.userno = m.mypage_userno AND m.mypage_userno = #{userno} AND m.mypage_protectboardno = p.protectboardno
+    </select>
+    <select id="writeMyprotectboard" parameterType="int" resultType="com.project.poinhanshin.domain.protectboard.ProtectBoardDto">
+        SELECT u.id, p.protectboard_userno , p.protectboardno , p.protectboard_title , p.protectboard_content , p.breeds , p.protectboard_ani_category , p.protectboard_reg_date  , p.protectstatus , p.starttime , p.deadline ,  p.fileAttached
+        FROM users u, protectboard p
+        WHERE u.userno = p.protectboard_userno AND p.protectboard_userno = #{userno}
+    </select>
+
+    <sql id="aniCategoryChoose">
+        <choose>
+            <when test="ani_category == 0">
+                protectboard_ani_category = 0
+            </when>
+            <when test="ani_category == 1">
+                protectboard_ani_category = 1
+            </when>
+            <otherwise> TRUE </otherwise>
+        </choose>
+    </sql>
+</mapper>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+          name="description"
+          content="나랑 잘 맞는 성향을 가진 동물을 MBTI 기반으로 추천해주는 사이트"
+  />
+
+  <!--  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">-->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css?family=Black+Han+Sans:400" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic+Coding:400" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:800" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/mbti/main.css">
+  <link rel="stylesheet" href="/css/mbti/qna.css">
+  <link rel="stylesheet" href="/css/mbti/act.css">
+  <link rel="stylesheet" href="/css/mbti/result.css">
+  <title>mbti 메인 홈페이지</title>
+  <style>
+    @keyframes rainbowText {
+      0% { color: red; }
+      14% { color: orange; }
+      28% { color: yellow; }
+      42% { color: green; }
+      57% { color: blue; }
+      71% { color: indigo; }
+      85% { color: violet; }
+      100% { color: red; }
+    }
+
+    .rainbow-text {
+      background-color: black;
+      padding: 10px;
+      font-weight: bold;
+      animation: rainbowText 6s linear infinite;
+    }
+  </style>
+</head>
+
+<body layout:fragment="content">
+<div class="container">
+  <section id="main" class="mx-auto my-5 py-5 px-3">
+    <div class="search-bar mx-auto my-3 col-4">
+    </div>
+    <div class="col-lg-6 col-md-8 col-sm-10 col-12 mx-auto">
+      <img src="/img/mbti/mbtithum1.png" alt="mainImage" class="img-fluid">
+    </div>
+    <p style="font-family: 'Nanum Gothic', cursive;">
+      나만의 MBTI 사이트입니다! <br>
+      아래 시작하기 버튼을 눌러 시작해 주십시오.
+    </p>
+    <button id="startButton" class="btn btn-outline-danger mt-3 my-5" onclick="begin()">시작하기</button>
+
+    <!--  유기동물 테이블  -->
+    <div class="rainbow-text" style="background-color: black; color: white; font-weight: bold; padding: 10px;">
+      동물친구들을 소개합니다!
+    </div>
+    <div class="row">
+      <div class="col-sm-4 p-2" th:each="Ab_ani : ${AAArr}">
+      <div class="card" id="pcard">
+        <a th:href="@{'/api/AnimalBoard'+${Ab_ani.queryString}}" style="text-decoration-line: none;">
+          <div class="card-header ">
+            <div class="">
+              <div class="" style="display: flex; justify-content: center;">
+                <img th:src="${Ab_ani.filename}" style=" width : 150px;height : 150px;"/>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <span class="badge text-bg-primary card-text" th:text="${Ab_ani.kindCd}">강아지</span>
+            <span class="badge rounded-pill text-bg-success" th:text="${Ab_ani.desertionNo}">유기번호</span>
+
+            <th:block th:if="${Ab_ani.sexCd}=='M'">
+              <span class="badge rounded-pill text-bg-info "th:text="|성별:${Ab_ani.sexCd}|" >M</span>
+            </th:block>
+            <th:block th:if="${Ab_ani.sexCd}=='F'">
+              <span class="badge rounded-pill text-bg-danger "th:text="|성별:${Ab_ani.sexCd}|" >F</span>
+            </th:block>
+          </div>
+        </a>
+      </div>
+      </div>
+    </div>
+  </section>
+  <section id="qna">
+    <div class="status mx-auto mt-5">
+      <div class="statusBar">
+      </div>
+    </div>
+    <div class="qBox my-5 py-3 mx-auto">
+
+    </div>
+    <div class="answerBox">
+
+    </div>
+  </section>
+  <section id="result" class="mx-auto my-5 py-5 px-3">
+    <h1>당신의 결과는?!</h1>
+    <div class="resultname">
+
+    </div>
+    <div id="resultImg" class="my-3 col-lg-6 col-md-8 col-sm-10 col-12 mx-auto">
+
+    </div>
+    <div class="resultDesc">
+
+    </div>
+    <button type="button" class="gohome mt-3 py-2 px-3 mx-auto" onclick="moveHome()">홈으로</button>
+    <button type="button" class="kakao mt-3 py-2 px-3" onclick="">공유하기</button>
+  </section>
+  <script src="/js/mbti/data.js" charset="utf-8"></script>
+  <script src="/js/mbti/start1.js" charset="utf-8"></script>
+  <script src="/js/mbti/share.js" charset="utf-8"></script>
+  <script>
+    $('#searchButton').on("click",function(){
+      let form = $('#form');
+      form.attr("action" ,"/MBTI/point");
+      form.attr("method" ,"get");
+      form.submit();
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+      // 검색 버튼 클릭 시 이벤트 리스너 추가
+      /*document.getElementById("searchButton").addEventListener("click", function () {
+        // MBTI 입력값 가져오기
+        var mbtiInput = document.getElementById("searchInput").value;
+
+        // 검색 페이지로 이동
+        window.location.href = "/MBTI/result";
+      });*/
+    });
+  </script>
+</div>
+</body>
+
+</html>

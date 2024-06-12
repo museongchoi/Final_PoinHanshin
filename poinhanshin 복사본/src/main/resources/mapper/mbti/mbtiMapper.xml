@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.mbti.MBTIMapper">
+    <select id="searchAband" parameterType="int" resultType="com.project.poinhanshin.domain.mbti.MBTINameKind">
+        SELECT k.kindCd, a.animalname, m.MBTIcategory
+        FROM MBTI m, animalMBTIrecommend a, kind k
+        WHERE m.MBTI = a.animalMBTIrecommend_MBTI and k.kindCd = a.animalMBTIrecommend_kindCd and m.MBTI = #{MBTI};
+    </select>
+</mapper>

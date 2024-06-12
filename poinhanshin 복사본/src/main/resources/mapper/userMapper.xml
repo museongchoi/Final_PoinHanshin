@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.login.UserDao">
+
+    <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="com.project.poinhanshin.domain.member.User">
+        insert into users(id, password, name, age, phnum, mail, address)
+        values (#{id}, #{password}, #{name}, #{age}, #{phnum}, #{mail}, #{address});
+    </insert>
+
+    <select id="findByLoginId" parameterType="String" resultType="com.project.poinhanshin.domain.member.User">
+        select * from users where id = #{id};
+    </select>
+
+    <select id="login" parameterType="String" resultType="com.project.poinhanshin.domain.member.User">
+        select * from users where id = #{id} and password = #{password};
+    </select>
+</mapper>

@@ -1,0 +1,128 @@
+
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.post {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.post-header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.animal-type {
+    background-color: #ffef93;
+    font-weight: bold;
+    flex-direction: row;
+    font-weight: bold;
+    display: flex;
+    border: #ffef93 3px solid;
+    border-radius: 20px;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+/*.time {*/
+/*    color: #888;*/
+/*}*/
+
+.post-image img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.post-content {
+    border-top: 1px solid #ddd;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+}
+
+.post-content p {
+    line-height: 1.5;
+}
+
+.header-left {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin-top: 10px;
+}
+
+.header-right {
+    text-align: right;
+    color: #888;
+}
+
+.footer-left {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin-top: 10px;
+    border-top: 5px solid #ddd;
+}
+
+.footer-left span {
+    margin-right: 10px;
+    color: #888;
+}
+
+.footer-right {
+    text-align: right;
+    color: #888;
+}
+
+/* 버튼 스타일 */
+.post-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.go-button {
+    background-color: #6e6e6e;
+    margin-right: 10px;
+}
+
+.icon-btn {
+    text-align: right;
+    background-color: rgba(255, 255, 255, 0);
+    border-color: rgba(0, 0, 0, 0);
+    margin-right: 3px
+}
+
+.writertype {
+    background-color: #ffef93;
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    border: #ffef93 3px solid;
+    border-radius: 20px;
+    padding: 5px;
+}
+
+.main-text {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+}

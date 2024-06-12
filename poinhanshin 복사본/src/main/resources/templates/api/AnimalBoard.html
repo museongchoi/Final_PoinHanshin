@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+
+<body layout:fragment="content">
+<div class="page">
+  <div class="container">
+  <div class="row col-sm-10 rounded mx-auto m-3 p-2" style="box-shadow: 0 0 20px #666666;">
+    <h5>
+   <span class="badge text-bg-primary" th:text="'품종 : '+${aban_ani.kindCd}"></span>
+      <span class="badge text-bg-primary" th:text="${aban_ani.colorCd}"></span>
+    <span class="badge text-bg-success" th:text="'상태 : '+${aban_ani.processState}"></span>
+      <span class="badge text-bg-primary" th:text="|공고기간 : ${aban_ani.noticeSdt} ~ ${aban_ani.noticeEdt}|"></span>
+    </h5>
+  </div>
+<div class="row mx-auto">
+
+      <div class="col-sm-10 mx-auto gap-1">
+        <figure class="figure">
+          <img th:src="${aban_ani.popfile}" class="figure-img img-fluid rounded">
+        </figure>
+
+
+      <div class="card" style="background-color:#A084E8;color:white;" >
+        <div class="card-header">
+          <p th:text="'특징 : '+${aban_ani.specialMark}"></p></div>
+        <div class="card-body">
+          <p th:text="'나이 : '+${aban_ani.age}"></p>
+          <p th:text="'무게 : '+${aban_ani.weight}"></p>
+          <p th:text="'성별 : '+${aban_ani.sexCd}"></p>
+          <p th:text="'중성화여부 : '+${aban_ani.neuterYn}"></p>
+        </div>
+      </div>
+        </div>
+</div>
+
+    <div class="vstack">
+    <div class="col-sm-10 mx-auto m-2">
+
+        <div class="card" style="background-color:#9C9EFE;" >
+          <div class="card-body" >
+              <div id="mapLost" style="height:200px;"></div>
+          </div>
+            <div class="card-footer" style="color:white">
+                <p th:text="'공고번호 : '+${aban_ani.noticeNo}"></p>
+                <p th:text="'유기번호 :' + ${aban_ani.desertionNo}"></p>
+                <p th:text="'접수일자 : '+ ${aban_ani.happenDt}"></p>
+                <p th:text="'발견장소 : '+ ${aban_ani.happenPlace}"></p>
+            </div>
+        </div>
+    </div>
+
+      <div class="row">
+      <div class="card-group col-sm-10 mx-auto">
+
+        <div class="card" style="background-color:#AFB4FF;color:white;">
+          <div class="card-header">보호소</div>
+          <div class="card-body">
+            <p th:text="'보호소이름 : '+${aban_ani.careNm}"></p>
+            <p th:text="'보호소전화번호 : '+${aban_ani.careTel}"></p>
+            <p th:text="'보호소주소 : ' +${aban_ani.careAddr}"></p>
+            <p th:text="'관할기관 : ' +${aban_ani.orgNm}"></p>
+            <p th:text="'담당자이름 : ' +${aban_ani.chargeNm}"></p>
+            <p th:text="'담당자전화번호 : '+ ${aban_ani.officetel}"></p>
+          </div>
+        </div>
+
+        <div class="card text-bg-Light">
+          <div class="card-body">
+            <div id="map" style="height:300px;width:100%;">지도
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+      </div>
+
+
+
+
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=9812c9a3072003e9084347785d8c83a0&libraries=services"></script>
+<script th:inline="javascript">
+const happenPlace ="[(${aban_ani.happenPlace})]";
+const careAddr = "[(${aban_ani.careAddr})]";
+const careNm = "[(${aban_ani.careNm})]";
+
+
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+      mapOption = {
+          center: new kakao.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
+          level: 1 // 지도의 확대 레벨
+      };
+      var mapContainer2 = document.getElementById('mapLost'), // 지도를 표시할 div
+      mapOption = {
+          center: new kakao.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
+          level: 1 // 지도의 확대 레벨
+      };
+      var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+      var map2 = new kakao.maps.Map(mapContainer2, mapOption); // 지도를 생성합니다
+
+      var geocoder = new daum.maps.services.Geocoder();
+   // 주소로 좌표를 검색합니다
+geocoder.addressSearch(careAddr, function(result, status) {
+  //마커 클릭 이벤트
+
+    // 정상적으로 검색이 완료됐으면
+     if (status === kakao.maps.services.Status.OK) {
+
+        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+        // 결과값으로 받은 위치를 마커로 표시합니다
+        var marker = new kakao.maps.Marker({
+            map: map,
+            position: coords
+        });
+
+        // 인포윈도우로 장소에 대한 설명을 표시합니다
+        var infowindow = new kakao.maps.InfoWindow({
+            content: `<div style="width:150px;text-align:center;padding:6px 0;">${careNm}</div>`
+        });
+        infowindow.open(map, marker);
+        console.log(status);
+        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+        map.setCenter(coords);
+    }
+});
+//실종위치
+geocoder.addressSearch(happenPlace, function(result, status) {
+  //마커 클릭 이벤트
+
+    // 정상적으로 검색이 완료됐으면
+     if (status === kakao.maps.services.Status.OK) {
+
+        var coords2 = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+        // 결과값으로 받은 위치를 마커로 표시합니다
+        var marker2 = new kakao.maps.Marker({
+            map: map2,
+            position: coords2
+        });
+
+        // 인포윈도우로 장소에 대한 설명을 표시합니다
+        var infowindow2 = new kakao.maps.InfoWindow({
+            content: '<div style="width:150px;text-align:center;padding:6px 0;">발견위치</div>'
+        });
+        infowindow2.open(map2, marker2);
+        console.log(status);
+        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+        map2.setCenter(coords2);
+    }else{
+               mapContainer2.style.display = "none";
+           mapContainer2.textContent = "검색 결과가 없습니다.";
+    }
+});
+
+
+</script>
+
+</body>
+</html>

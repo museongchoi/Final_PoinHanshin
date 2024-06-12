@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>임보자상세페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="/css/commonstyle.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+</head>
+<style>
+
+</style>
+
+<body layout:fragment="content">
+<script th:if="${msg} == 'SUCCESS_UPDATE'">alert("게시글을 수정했습니다.")</script>
+<script th:if="${msg} == 'FAIL_UPDATE'">alert("게시글을 수정하지 못했습니다.")</script>
+<script th:if="${msg} == 'FAIL_REMOVE'">alert("게시글을 삭제하지 못했습니다.")</script>
+<script th:if="${msg} == 'SUCCESS_INSERT'">alert("게시글을 등록했습니다.")</script>
+<script th:if="${msg} == 'NotEqual'">alert("작성자만 삭제할 수 있습니다.")</script>
+<div class="page">
+
+
+    <form id="form" action="" method="post">
+        <div class="m-1">
+            <span th:if="${protectboard.protectboard_ani_category == false}" class="badge rounded-pill" style="font-size: 16px;background-color:#AFB4FF;">강아지</span>
+            <span th:if="${protectboard.protectboard_ani_category == true}"class="badge rounded-pill" style="font-size: 16px;background-color:#AFB4FF;">고양이</span></div>
+        <div class="col-5 p-3" >
+            <!-- input 태그는 수정 페이지로 데이터를 넘겨주기 위해 작성 , 이거 안 해주면 DB에서 불러와야 함 -->
+            <!-- 페이지 정보 및 게시물 번호 , 작성자 form input-->
+            <input type="hidden" name="page" th:value="${sc.getPage()}"/>
+            <input type="hidden" name="pageSize" th:value="${sc.getPageSize()}"/>
+            <input type="hidden" name="keyword" th:value="${sc.getKeyword()}"/>
+            <input type="hidden" name="protectboard_id" th:value="${protectboard.protectboard_id}"/>
+            <input type="hidden" name="protectboardno" th:value="${protectboard.protectboardno}"/>
+            <input type="hidden" name="protectstatus" th:value="${protectboard.protectstatus}"/>
+            <input type="hidden" name="protectboard_userno" th:value="${protectboard.protectboard_userno}"/>
+            <input th:if="${protectboard.fileAttached == 0}" type="hidden" name="fileAttached" th:value="${protectboard.fileAttached}"/>
+            <input type="hidden" th:if="${loginUser != null}" name="loginUser_userno" id="loginUser_userno" th:value="${loginUser.userno}"/>
+            <input type="hidden" th:unless="${loginUser != null}" name="loginUser_userno" value="0"/>
+
+            <!-- 동물 카테고리 , 작성일 , 마감일 form input  -->
+            <!-- 프론트가 수정 필요 -->
+            <input type="hidden" name="protectboard_ani_category" th:value="${protectboard.protectboard_ani_category}"/>
+
+            <input type="text" name="protectboard_reg_date" th:value="${#dates.format(protectboard.protectboard_reg_date, 'yyyy-MM-dd HH:ss')}" id="reg_date" readonly="readonly " hidden="hidden"/>
+<!--            <input type="date" name="starttime" th:value="${#dates.format(protectboard.starttime, 'yyyy-MM-dd HH:mm:ss')}"id="starttime" readonly="readonly" hidden="hidden"/>-->
+<!--            <input type="date" name="deadline" th:value="${#dates.format(protectboard.deadline, 'yyyy-MM-dd')}"id="deadline" readonly="readonly" hidden="hidden"/>-->
+
+        </div>
+
+        <!--태그-->
+        <span th:if="${protectboard.breeds != null}" class="badge text-bg-primary" th:text="${protectboard.breeds}" style="font-size: 16px;">품종</span>
+<!--        <span th:if="${#bools.isTrue(protectboard.protectstatus)}" class="badge rounded-pill text-bg-success " style="font-size: 16px;">완료</span>-->
+<!--        <span th:if="${#bools.isFalse(protectboard.protectstatus)}" class="badge rounded-pill text-bg-info "style="font-size: 16px;">공고중</span>-->
+        <span class="badge rounded-pill text-bg-danger" id="D_day" text="남은일" style="font-size: 16px;"></span>
+        <span class="badge rounded-pill text-bg-success" id="D_stat"style="font-size: 16px;"></span>
+        <span class="badge rounded-pill text-bg-warning"th:text="|공고기간 : ${#dates.format(protectboard.starttime, 'yyyy-MM-dd')} ~ ${#dates.format(protectboard.deadline, 'yyyy-MM-dd')}|" name="deadline" style="font-size: 16px;"></span>
+        <!-- 신고/즐겨찾기 -->
+
+        <div class="row">
+            <div class="col-sm-12 hstack">
+                <th:block th:if="${not #strings.isEmpty(loginUser)}">
+                    <span class="p-2 ms-auto"><a id="favorite"  href="#" title="즐겨찾기"><i class="fa-solid fa-star fa-2xl" style="color: #ffdd00;"></i></a></span>
+                </th:block>
+            </div>
+        </div>
+
+
+        <div class="row m-2 p-3 rounded-0 border-bottom" id="titleWrapper">
+                 <h5><input class="col-sm-12" type="text" name="protectboard_title" id="protectboard_title" th:value="${protectboard.protectboard_title}" readonly="readonly" style="border:none;outline:none;"></h5>
+
+        </div>
+        <!-- 이미지 출력 -->
+        <div th:if="${protectboard.fileAttached == 1}">
+            <!-- 이미지 파일 존재 여부 -->
+            <input type="hidden" name="fileAttached" th:value="${protectboard.fileAttached}"/>
+            <div class="row" th:each="fileName: ${protectboard.storedFileName}">
+                <div class="col-sm-8 mx-auto">
+                    <figure class="figure">
+                        <img th:src="@{|/upload/protectboard/${fileName}|}" alt="이미지 없음" class="figure-img img-fluid rounded" />
+                    </figure>
+                </div>
+
+                <!-- 수정으로 이미지 정보 넘겨주기 위해 추가 (? 사용 안하는 것 같긴한데 일단 변경 금지 -->
+                <input type="hidden" name="storedFileName" th:value="${fileName}"/>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-mb-3">
+                <textarea
+                        type="text"
+                        name="protectboard_content"
+                        class="form-control"
+                        id="inputContent"
+                        th:text="${protectboard.protectboard_content}"
+                        readonly="readonly"
+                        style="height:25vh;border:none;outline:none;"></textarea>
+            </div>
+        </div>
+
+
+        <!-- 작성자 및 작성일 표시 -->
+        <div class="hstack">
+            <i class="fas fa-user-edit"></i> <span class="p-2" th:text="|  ${protectboard.protectboard_id}|">작성자:</span>
+            <small class="ms-auto" th:text="| ${#dates.format(protectboard.protectboard_reg_date, 'yyyy년 MM월 dd일 (HH:mm:ss) ')}|" >작성일:</small>
+        </div>
+
+        <div class="vstack col-sm-2 mx-auto" >
+            <!-- 로그인 사용자와 게시물 작성자가 일치할 경우 삭제 , 닉네임이 아닌 userno로 회원번호로 비교(닉네임중복방지), 수정 버튼 표  -->
+            <th:block th:if="${loginUser} ? ${loginUser.userno} == ${protectboard.protectboard_userno} : false ">
+                <button type="button" class="btn btn-secondary" id="modifyBtn">수정</button>
+                <button type="button" class="btn btn-danger" id="removeBtn">삭제</button>
+            </th:block>
+        </div>
+        <div class="hstack gap-3">
+            <div class="p-2 ms-auto">
+                <button type="button" class="btn btn-secondary"
+                        th:onclick="|location.href='@{/protectboard/list(page = ${sc.getPage} , pageSize = ${sc.getPageSize} , keyword=${sc.getKeyword} )}'|">목록
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<script th:inline="javascript">
+
+const list = [[${protectboard}]];
+
+    // 수정 버튼 클릭시 수정 페이지로 이동
+    $("#modifyBtn").on("click",function(){
+        if(!confirm("수정하시겠습니까 ?")) return;
+        let form = $('#form');
+        form.attr("action" , [[@{/protectboard/modify}]]);
+        form.attr("method" , "get");
+        form.submit();
+
+    });
+
+    // 삭제 버튼 클릭시 해당 게시물 삭제
+    $("#removeBtn").on("click",function(){
+        if(!confirm("정말로 삭제하시겠습니까 ?")) return;
+        let form = $('#form');
+        form.attr("action", [[@{/protectboard/remove}]]);
+        form.attr("method", "post");
+        form.submit();
+    });
+
+    // 즐겨찾기 기능 시작
+    let mypage_userno = $('input[name=loginUser_userno]').val();
+
+    if( mypage_userno != undefined){
+        $('#favorite').on("click" , function(){
+
+            let mypage_userno = $('input[name=loginUser_userno]').val();
+            let mypage_protectboardno = [[${protectboard.protectboardno}]];
+
+            let myPageDto = {
+                mypage_userno : mypage_userno,
+                mypage_protectboardno : mypage_protectboardno
+            }
+
+            $.ajax({
+                type : 'POST',
+                url : '/favoriteUpdate',
+                headers : {"content-type" : "application/json"},
+                dataType : 'json',
+                data : JSON.stringify(myPageDto),
+                success : function(data){
+                    if(data == 0){
+                        alert("즐겨찾기 추가");
+                    } else {
+                        alert("즐겨찾기 삭제")
+                    }
+                },
+                error : function(str){}
+            });
+
+        });
+    }
+    // 즐겨찾기 기능 끝
+
+
+
+
+//날짜계산
+
+
+let D_Day = function(){
+
+    let start_Date = new Date( [[${#dates.format(protectboard.starttime, 'yyyy-MM-dd HH:ss')}]] );
+    let end_date= new Date([[${#dates.format(protectboard.deadline, 'yyyy-MM-dd HH:ss')}]]);
+
+    const d_day = document.querySelector(`#D_day`);
+    const d_stat = document.querySelector(`#D_stat`);
+
+    const now = new Date(); //현재시간 추출용
+    const formattedDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;//yyyy-MM-dd 형식
+    const today_date = new Date(formattedDate);//Date로 변환
+
+    const diff = end_date.getTime() - today_date.getTime();
+
+    console.log(today_date);
+    console.log([[${#dates.format(protectboard.deadline, 'yyyy-MM-dd')}]]);
+
+    let diffDay = Math.floor(diff / (1000*60*60*24));
+
+
+        //남은 날짜가 음수인경우 0
+            if(diffDay < 0) {
+                diffDay = "0";
+                d_day.innerText=`공고완료`;
+            }else{
+                d_day.innerText=`D-${diffDay}일`;
+                d_stat.innerText= `공고중`;
+            }
+    console.log(diffDay);
+};
+    D_Day();
+
+</script>
+</body>
+</html>

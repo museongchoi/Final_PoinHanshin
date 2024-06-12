@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <meta charset="UTF-8">
+  <title>게시물 목록 보기</title>
+  <link rel="stylesheet" type="text/css" href="/css/map/maplist.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Black+Han+Sans:400" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic+Coding:400" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:800" rel="stylesheet">
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+</head>
+<script th:inline="javascript">
+  const msg = [[${#httpServletRequest.getAttribute('msg')}]];
+  if (msg == "SUCCESS_REMOVE") alert("게시글을 삭제했습니다.");
+  if (msg == "NO_LOGIN") alert("로그인이 필요합니다.");
+</script>
+<!--<script th:if="${msg} == 'SUCCESS_REMOVE'">alert("게시글을 삭제했습니다.")</script>
+<script th:if="${msg} == 'NO_LOGIN'"> alert("로그인이 필요합니다.")</script>-->
+<body layout:fragment="content">
+<div class="container">
+  <div class="row">
+    <div class="col-md-2">
+      <form id="form" action="/map/list" method="get">
+        <!-- 페이지 정보 및 로그인 정보-->
+        <input type="hidden" name="page" th:value="${sc.page}"/>
+        <input type="hidden" name="pageSize" th:value="${sc.pageSize}"/>
+        <input type="hidden" name="keyword" th:value="${sc.keyword}"/>
+        <input type="hidden" name="loginUser" id="loginUser" th:if="${loginUser}" th:value="${loginUser.userno}"/>
+        <input type="hidden" name="loginUser" th:unless="${loginUser}" value="0"/>
+        <!--<input type="hidden" name="missingAddress" th:value="${sc.ani_category}"/>-->
+      </form>
+    </div>
+    <div class="header-left">
+      <form id="filterForm" action="/map/list" method="get">
+        <div class="row">
+        <input type="hidden" name="page" th:value="${sc.page}"/>
+        <input type="hidden" name="pageSize" th:value="${sc.pageSize}"/>
+        <!-- 드롭다운 필터 -->
+        <div class="col-md-3">
+        <div class="mb-3">
+          <label class="form-label" for="animal-filter">동물 선택:</label>
+          <select class="form-select" id="animal-filter" name="ani_category" >
+            <option value="2" th:selected="${sc.ani_category == 2}">전체</option>
+            <option value="1" th:selected="${sc.ani_category == 1}">고양이</option>
+            <option value="0" th:selected="${sc.ani_category == 0}">강아지</option>
+          </select>
+        </div>
+        </div>
+    <div class="col-md-3">
+      <!-- 신고자/발견자 선택 드롭다운 필터 -->
+      <div class="mb-3">
+        <label class="form-label" for="author-filter">신고자/발견자 선택:</label>
+        <select class="form-select" id="author-filter" name="writerType">
+          <option value="2" th:selected="${sc.writerType == 2}">전체</option>
+          <option value="1" th:selected="${sc.writerType == 1}">발견자</option>
+          <option value="0" th:selected="${sc.writerType == 0}">신고자</option>
+        </select>
+      </div>
+    </div>
+    <div class="col">
+      <!-- 지역 선택 드롭다운 필터 -->
+      <label class="form-label" for="locatin-filter">지역 선택:</label>
+      <div style="display: flex; flex-direction: row;">
+        <input type="text" class="form-control" style="width: 150px;" name="keyword" th:value="${sc.keyword}" id="locatin-filter" placeholder="지역">
+<!--        <input type="button" class="btn mx-1 btn-outline-dark" onclick="map_Postcode()" value="지역 찾기" id="searchBtn" name="keyword" th:value="${sc.keyword}">-->
+        <button type="button" class="btn mx-1 btn-outline-dark" id="filterSearchBtn">검색</button>
+      </div>
+    </div>
+        </div>
+    </form>
+    </div>
+
+    <div class="header-right my-4">
+      <button class="icon-btn" onclick="location.href='/map/oneMapMain'" data-toggle="tooltip" data-placement="top" title="지도">
+        <i class="fa-solid fa-map fa-2xl" style="color: #7605ff;"></i>
+      </button>
+      <!--<button class="icon-btn" onclick="location.href='findmaplist.html'" data-toggle="tooltip" data-placement="top" title="리스트뷰">
+        <i class="fa-solid fa-list-ul fa-2xl" style="color: #7605ff;"></i>
+      </button>-->
+      <button class="icon-btn" type="button" id="writeBtn" onclick="location.href='/map/write'"  data-toggle="tooltip" data-placement="top" title="글 작성하기" th:if="${loginUser}">
+        <i class="fa-regular fa-pen-to-square fa-2xl" style="color: #7605ff;"></i>
+      </button>
+        <button class="icon-btn" type="button" id="alertmap1" data-toggle="tooltip" data-placement="top" title="글 작성하기" th:unless="${loginUser}">
+          <i class="fa-regular fa-pen-to-square fa-2xl" style="color: #7605ff;"></i>
+      </button>
+    </div>
+  </div>
+  <div class="post" th:each="mapBoardDto : ${mapBoardDtoList}">
+    <a th:href="@{/map/read(mapboardno=${mapBoardDto.mapboardno}, page=${sc.getPage()} , pageSize=${sc.getPageSize()} , keyword=${sc.getKeyword()} )}" style="text-decoration: none;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div style="flex: 1;">
+      <div class="post-header">
+        <!--<strong class="animal-type" th:text="'품종:'${mapBoardDto.mapboard_ani_category}">품종: </strong>-->
+        <i class="fa-solid fa-paw" style="color: #4c1dc2;">
+          <span th:if="${mapBoardDto.mapboard_ani_category == false}" th:text="|강아지|" style="color: #000000;"></span>
+       <span th:unless="${mapBoardDto.mapboard_ani_category == false}" th:text="|고양이|" style="color: #000000;"></span>
+        </i>
+      </div>
+      <div class="post-footer" style="display: flex; flex-direction: column">
+        <i class="fa-solid fa-street-view" style="color: #3c3c7e;">
+          <span class="writertype mb-1 lh-base" th:unless="${mapBoardDto.writertype == true}" th:text="| 신고/발견자 : 신고자 |">신고/발견자: </span>
+          <span class="writertype mb-1 lh-base" th:if="${mapBoardDto.writertype == true}" th:text="| 신고/발견자 : 발견자 |">신고/발견자: </span>
+        </i>
+        <i class="fa-solid fa-location-dot"><span class="address lh-base" th:text="'실종/발견 장소: ' + ${mapBoardDto.missingaddress}" style="color: #3c3c7e;">실종/발견 장소: </span></i>
+        <i class="fa-solid fa-calendar-days"><span class="datetime lh-base" th:text="'실종/발견 날짜 및 시간: ' + ${#dates.format(mapBoardDto.missingtime, 'yyyy년 MM월 dd일 (HH:mm:ss) ')}" style="color: #3c3c7e;">실종/발견 날짜 및 시간: </span></i>
+      </div>
+      </div>
+      <div class="post-content">
+        <div class="header-right">
+          <!--<img class="post-image" th:src="${mapboard.mapboard_imagepath}" th:alt="${mapboard.animalType}" alt="빈이미지">-->
+          <img class="post-image" th:if="${mapBoardDto.fileAttached == 1}" th:src="@{|/upload/mapboard/${mapBoardDto.storedFileName[0]}|}" alt="Dog">
+          <img class="post-image" th:unless="${mapBoardDto.fileAttached == 1}" src="/img/empty.png"  alt="빈 이미지">
+        </div>
+      </div>
+    </div>
+    </a>
+    <div class="header-right">
+      <span class="mapboard_reg_date" th:text="'작성일: ' +${#dates.format(mapBoardDto.mapboard_reg_date, 'yyyy년 MM월 dd일 (HH:mm:ss) ')}">작성일: </span>
+        <span class="mapboard_userno" th:text="'작성자: ' +${mapBoardDto.id}">작성자: </span>
+    </div>
+  </div>
+</div>
+<div class="d-flex justify-content-center">
+<div class="btn-group" role="group" aria-label="First group">
+  <div class="ph-wrapper">
+    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+      <div class="btn-group m-auto btn-group-sm" role="group" aria-label="First group">
+        <button type="button" style="width:30px;height:40px;" class="btn btn-primary" th:if="${ph.showPrev}" th:onclick="|location.href='@{'/map/list'+${ph.sc.getQueryString(ph.beginPage - 1)}}'|">&lt;</button>
+        <th:block th:if="${not #strings.isEmpty(ph.totalCnt)}" th:each="i : ${#numbers.sequence(ph.beginPage,ph.endPage)}">
+          <button th:if="${i !=0}" type="button" style="width:30px;height:40px" class="btn btn-secondary" th:class="${ph.sc.page == i ? 'btn btn-primary' : 'btn btn-secondary'}" th:onclick="|location.href='@{'/map/list'+${ph.sc.getQueryString(i)}}'|" th:text="${i}"></button>
+        </th:block>
+        <button type="button" style="width:30px;height:40px" class="btn btn-primary" th:if="${ph.showNext}" th:onclick="|location.href='@{'/map/list'+${ph.sc.getQueryString(ph.endPage + 1)}}'|">&gt;</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<!--text="${boardDto.boardno}"-->
+<script>
+  $('#writeBtn').on("click",function(){
+      let form = $('#form');
+      form.attr("action" , "/map/write");
+      form.attr("method", "get");
+      form.submit();
+  });
+
+/*  // 동물 드롭다운 클릭시
+  $('#animal-filter').on("click",function(){
+    let form = $('#form');
+    form.submit();
+  });
+  $('#author-filter').on("click" , function(){
+    let form = $('#form')
+    form.submit();
+  })*/
+
+  $('#filterSearchBtn').on("click", function (){// 동물 드롭다운 클릭시
+    $('#animal-filter').on("click",function(){
+      let form = $('#form');
+      form.submit();
+    });
+    $('#author-filter').on("click" , function(){
+      let form = $('#form')
+      form.submit();
+    })
+
+    let from = $('#filterForm');
+    from.submit();
+  })
+  //주소 검색 카카오(다음)api(활용시 주소 검색후 map으로 다시 검색후 경도/위도 반환 가능)
+  function map_Postcode() {
+    new daum.Postcode({
+      oncomplete: function(data) {
+        // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+        document.getElementById('locatin-filter').value = data.bname;
+        // 커서를 상세주소 필드로 이동한다.
+        document.getElementById("locatin-filter").focus();
+      }
+    }).open();
+  }
+
+  document.getElementById('alertmap1').addEventListener('click', function () {
+    // 수정 페이지로 이동
+
+    alert('로그인이 필요합니다.');
+  });
+</script>
+</body>
+</html>

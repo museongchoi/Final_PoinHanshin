@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="commentbox" >
+    <input type="hidden" id="commentno" name="commentno" >
+    <div>
+        <small >유저id</small>
+        <small > 2010-11-11 10:51:03 (ex)</small>
+        <span >내용</span>
+    </div>
+
+    <span>
+                        <button type="button" id="writeCommentBtn" data-bs-toggle="collapse"
+                                style="display:inline" class="btn btn-outline-primary btn-sm">답글달기
+                        </button>
+        </span><span class="text-right" >
+        <span><button type="submit"  class="btn btn-outline-danger btn-sm"  name="submit" value="delete">삭제</button></span>
+    </span>
+</div>
+</body>
+</html>
+
+<div>
+    <form  method="post">
+        <div>
+            <small >유저id</small>
+            <small > 2010-11-11 10:51:03 (ex)</small>
+            <span >내용</span>
+            <button type="button" id="writeCommentBtn" data-bs-toggle="collapse"
+                    style="display:inline" class="btn btn-outline-primary btn-sm">답글달기
+            </button>
+            <button type="submit"  class="btn btn-outline-danger btn-sm"  name="submit" value="delete">삭제</button>
+        </div>
+    </form>
+</div>

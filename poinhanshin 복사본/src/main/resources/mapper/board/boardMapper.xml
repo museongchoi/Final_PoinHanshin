@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.board.BoardMapper">
+    <select id="boardSearchResultCnt" parameterType="com.project.poinhanshin.domain.etc.SearchCondition" resultType="int">
+        SELECT COUNT(*)
+        FROM board
+        WHERE board_title LIKE concat('%' , #{keyword} ,'%')
+        and <include refid="aniCategoryChoose"/>
+    </select>
+    <select id="boardSearchResultList" parameterType="com.project.poinhanshin.domain.etc.SearchCondition" resultType="com.project.poinhanshin.domain.board.BoardDto">
+        SELECT u.id , b.board_userno , b.boardno , b.board_title , b.board_content , b.board_ani_category , b.board_reg_date , b.board_viewcount , b.commentcount , b.likecount , b.fileAttached
+        FROM users u, board b
+        WHERE u.userno = b.board_userno and b.board_title LIKE concat('%' , #{keyword} ,'%')
+        and <include refid="aniCategoryChoose"/>
+        ORDER BY b.boardno ASC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+    <select id="boardSelectContentOne" parameterType="int" resultType="com.project.poinhanshin.domain.board.BoardDto">
+        SELECT u.id , b.board_userno , b.boardno , b.board_title , b.board_content , b.board_ani_category , b.board_reg_date , b.board_viewcount , b.commentcount ,b.likecount ,b.fileAttached
+        FROM users u, board b
+        WHERE u.userno = b.board_userno and b.boardno = #{boardno}
+    </select>
+    <insert id="boardInsertContent" parameterType="com.project.poinhanshin.domain.board.BoardDto">
+        INSERT INTO board
+        (board_userno , board_title , board_content , board_ani_category , board_reg_date  , board_viewcount , commentcount , likecount , fileAttached)
+        VALUES (#{board_userno} , #{board_title} , #{board_content} , #{board_ani_category} , now() , 0 , 0 , 0 , #{fileAttached})
+    </insert>
+    <update id="boardUpdateContent" parameterType="map">
+        UPDATE board
+        SET board_title = #{boardDto.board_title} , board_content = #{boardDto.board_content} , board_ani_category = #{boardDto.board_ani_category} , fileAttached = #{boardDto.fileAttached}
+        WHERE boardno = #{boardDto.boardno} and board_userno = #{loginUser}
+    </update>
+    <delete id="boardDeleteContent" parameterType="map">
+        DELETE FROM board
+        WHERE boardno = #{boardno} and board_userno = #{loginUser}
+    </delete>
+    <select id="boardSelectRecentBoardNo" parameterType="int" resultType="int">
+        SELECT boardno
+        FROM board
+        WHERE board_userno = #{board_userno}
+        ORDER BY boardno DESC
+        LIMIT 1
+    </select>
+    <update id="boardUpdateFileAttached" parameterType="map">
+        UPDATE board
+        SET fileAttached = #{fileAttached}
+        WHERE boardno = #{boardno}
+    </update>
+    <sql id="aniCategoryChoose">
+        <choose>
+            <when test="ani_category == 0">
+                board_ani_category = 0
+            </when>
+            <when test="ani_category == 1">
+                board_ani_category = 1
+            </when>
+            <otherwise> TRUE </otherwise>
+        </choose>
+    </sql>
+    <update id="updateViewCnt">
+        UPDATE board
+        SET board_viewcount = board_viewcount + 1
+        WHERE boardno = #{boardno}
+    </update>
+    <select id="selectViewCntTop" >
+        SELECT u.id , b.board_userno , b.boardno , b.board_title , b.board_content , b.board_ani_category , b.board_reg_date , b.board_viewcount , b.commentcount , b.likecount , b.fileAttached
+        FROM users u, board b
+        WHERE u.userno = b.board_userno
+        ORDER BY board_viewcount DESC
+        LIMIT 3
+    </select>
+    <select id="selectLikeCntTop">
+        SELECT u.id , b.board_userno , b.boardno , b.board_title , b.board_content , b.board_ani_category , b.board_reg_date , b.board_viewcount , b.commentcount , b.likecount , b.fileAttached
+        FROM users u , board b
+        WHERE u.userno = b.board_userno
+        ORDER BY b.likecount DESC , b.commentcount DESC
+        LIMIT 3
+    </select>
+    <update id="updateCommentCnt" parameterType="map">
+        Update board
+        SET commentcount = commentcount + #{num}
+        Where boardno = #{boardno}
+    </update>
+
+    <select id="selectMyBoard" parameterType="int" resultType="com.project.poinhanshin.domain.board.BoardDto">
+        SELECT u.id , b.board_userno , b.boardno , b.board_title , b.board_content , b.board_ani_category , b.board_reg_date , b.board_viewcount , b.commentcount , b.likecount , b.fileAttached
+        FROM users u, board b, mypage m
+        WHERE u.userno = m.mypage_userno and b.boardno = m.mypage_boardno and m.mypage_userno = #{userno}
+    </select>
+
+    <select id="writeMyBoard" parameterType="int" resultType="com.project.poinhanshin.domain.board.BoardDto">
+        SELECT u.id , b.board_userno , b.boardno , b.board_title , b.board_content , b.board_ani_category , b.board_reg_date , b.board_viewcount , b.commentcount , b.likecount , b.fileAttached
+        FROM users u, board b
+        WHERE u.userno = b.board_userno and b.board_userno = #{userno}
+    </select>
+</mapper>

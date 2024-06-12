@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.board.BoardFileMapper">
+    <select id="boardSelectFile" parameterType="int" resultType="com.project.poinhanshin.domain.board.BoardFileDto">
+        SELECT boardno , boardfileno , reg_date , original_file_name , stored_file_name , fileSize
+        FROM boardFile
+        WHERE boardno = #{boardno}
+    </select>
+    <select id="boardSelectFileName" parameterType="int" resultType="string">
+        SELECT stored_file_name
+        FROM boardFile
+        WHERE boardno = #{boardno}
+    </select>
+    <insert id="boardInsertFile" parameterType="com.project.poinhanshin.domain.board.BoardFileDto">
+        INSERT INTO boardFile (boardno , reg_date , original_file_name , stored_file_name , fileSize)
+        VALUES (#{boardno} , now() , #{original_file_name} , #{stored_file_name} , #{fileSize})
+    </insert>
+    <delete id="boardDeleteFile" parameterType="string">
+        DELETE FROM boardFile
+        WHERE stored_file_name = #{stored_file_name}
+    </delete>
+    <select id="boardSelectCnt" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM boardFile
+        WHERE boardno = #{boardno}
+    </select>
+
+</mapper>

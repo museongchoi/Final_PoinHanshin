@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+  <meta charset="utf-8">
+ <link href="/css/commonstyle.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<body layout:fragment="content">
+<div class="page">
+    <div class="container">
+
+    <div id="carouselExampleFade" class="carousel slide carousel-fade col-sm-7 mx-auto" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active" data-bs-interval="5000">
+                <img src="/img/slider_img_cat.jpg"  class="carousel-img rounded" alt="...">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+
+    </div>
+
+    <div class="card-group mt-3">
+
+        <div class="card cardScaleUp">
+          <a th:href="@{/board/list}" style="color:black">
+            <img src="/img/board_static.png" data-animated="/img/board_img_black200.gif" data-static="/img/board_static.png" class="card-img-top object-fit-contain border rounded  hov-anim" alt="커뮤니티img">
+              <div class="card-body">
+                <h5 class="card-title text-center">커뮤니티</h5>
+              </div>
+          </a>
+        </div>
+
+        <div class="card cardScaleUp">
+          <a th:href="@{/MBTI/main}" style="color:black">
+            <img src="/img/mbti_home_img200.png" class="card-img-top object-fit-contain border rounded" alt="mbtiimg">
+            <div class="card-body">
+              <h5 class="card-title text-center">MBTI 매칭</h5>
+            </div>
+          </a>
+        </div>
+        <div class="card cardScaleUp">
+            <a th:href="@{/map/oneMapMain}" style="color:black">
+              <img src="/img/map200.png" class="card-img-top object-fit-contain border rounded" alt="맵이미지">
+              <div class="card-body">
+                <h5 class="card-title text-center">신고/등록 MAP</h5>
+              </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<script th:inline="javascript">
+    const msg = [[${#httpServletRequest.getAttribute('msg')}]];
+    if (msg === "LOGIN_OK") alert("환영합니다");
+
+//버튼 gif 재생 애니메이션
+  $(".hov-anim").mouseover(function() {
+  $(this).attr("src", $(this).data("animated"))
+}),
+$(".hov-anim").mouseout(function() {
+  $(this).attr("src", $(this).data("static"))
+});
+
+          
+
+        
+
+    let animalList = function () {
+      $.ajax({
+        type: 'GET',
+        url: '/api/AnimalList',
+        success: function (AAArr) {
+          console.log('이미지조회성공');
+          console.log(AAArr);
+        const regex = /<img[^>]*id="ani"[^>]*src="(.*?)"[^>]*>/gi;
+        const imgs = AAArr.matchAll(regex);
+        const srcs = Array.from(imgs).map((img) => img[1]);
+        const srcsNoS = srcs.map((src) => src.replace("_s", ""));
+        console.log(srcsNoS);
+          
+
+        srcsNoS.forEach((src) => {
+              let carouselItem = document.createElement('div');
+              carouselItem.setAttribute('class', 'carousel-item');
+              let carousel_img = document.createElement('img');
+              carousel_img.setAttribute('class','carousel-img rounded');
+              carouselItem.appendChild(carousel_img);
+              carousel_img.setAttribute('src', src);
+              document.querySelector('.carousel-inner').appendChild(carouselItem);
+            });
+
+        },
+        error: function () {/*alert("ERROR");*/}
+      });
+  }
+    animalList();
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+   @media (min-width: 700px) {
+      .page  {
+        width: 600px;
+      }
+    }
+
+    @media (min-width: 992px) {
+      .page {
+        width: 940px;
+      }
+
+    }
+
+    @media (min-width: 1200px) {
+      .page {
+        width: 1100px;
+      }
+    }
+
+  html,body{
+       width: 100%;
+       height: 100%;
+
+   }
+   body{
+
+   }
+
+  .page {
+
+        min-height:100vh;
+        margin: 0 auto;
+        margin-top: 10px;
+        height: 100%;
+        padding: 10px;
+        height: auto;
+        min-height: (100% -140px);
+        border-radius:10px;
+        border-bottom-width: 2px;
+        padding-bottom: 20px;
+        box-shadow: 0 0 20px #666666;
+
+    }
+    .page-wrapper-box{
+        background: linear-gradient(#A66CFF,#9C9EFE,#AFB4FF)
+    }
+   .chart{
+
+   }
+ /*홈버튼확대*/
+.cardScaleUp:hover{
+      z-index: 999;
+      transform: scale(1.2);
+      transition-duration: 0.5s;
+}
+.cardScaleUp:not(:hover) {
+  transform: scale(1);
+  transition-duration: 0.5s;
+  z-index: 10;
+}
+ /*이미지슬라이더*/
+.carousel-inner {
+    height: 450px;
+    width: 600px;
+}
+.carousel-img
+{
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+
+ /*nav-bar헤더*/
+  #navbarSupportedContent{
+  background-color: #6F61C0;
+   border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    padding-left:20px;
+    padding-right:20px;
+  }
+  #navbar-board{
+  background-color: #A084E8;
+  }
+  #header-wrapper{
+  background-color: #6F61C0;
+  }
+  #navbar-dropdown-wrapper{
+
+  }
+
+  .footer{
+    height : 60px
+  }
+  .header{
+   height :67px
+  }
+  a {
+    text-decoration-line: none;
+    color: black;
+    }
+  a:hover{
+  color:#A66CFF
+  }
+/*boardlist*/
+    .info_table {
+        font-size: 12px
+    }
+    .title_wrapper {
+        padding-bottom: 50px
+    }
+    .title{
+        font-size: 14px
+    }
+    .thumbnail_wrapper{
+        width:150px;
+        height:150px;
+        object-fit:cover;
+        border-radius: 12px;
+        max-width:150px;
+    }
+    .th_id {
+       width: 30px;
+    }
+    .th_title {
+       width: 600px;
+    }
+    .th_author {
+        width: 50px;
+    }
+    .th_count {
+       width: 40px;
+    }
+    .th_date {
+       width: 100px;
+    }
+    .searchbox {
+        width: 400px;
+    }
+    .th_thumbnail {
+        width: 100px;
+    }
+    /*board*/
+    #likeBtn:focus {
+      animation: icon-change 1.0s ;
+    }
+    @keyframes icon-change {
+       from{
+          opacity: 0;
+       }
+       to{
+        opacity: 1;
+       }
+    }
+
+
+
+    }
+    /*protectedit*/
+        #att_zone{
+        margin:0;
+        padding:5px;
+        outline: 2px dashed #92b0b3 ;
+        text-align: center;
+        transition: all .15s ease-in-out;
+        width: 100%;
+        height: 200px;
+        background-color:#BFACE2;
+    }
+/*protectlist*/
+.card-img-top {
+width: 100%;
+height: 25vh;
+object-fit: contain;
+}
+
+
+    /*#6F61C0 #A084E8 #8BE8E5 #D5FFE4 색팔레트  코드메모용 https://colorhunt.co/palette/6f61c0a084e88be8e5d5ffe4
+     #A66CFF  #9C9EFE #AFB4FF #B1E1FF*/

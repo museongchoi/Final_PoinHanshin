@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.map.MapMapper">
+    <select id="selectMapCnt" parameterType="com.project.poinhanshin.domain.etc.SearchCondition" resultType="int">
+        SELECT COUNT(*)
+        FROM mapboard
+        WHERE missingaddress LIKE concat('%' , #{keyword} ,'%')
+        and
+        <include refid="writeTypeChoose"/>
+        and
+        <include refid="aniCategoryChoose"/>
+    </select>
+    <select id="selectMapList" parameterType="com.project.poinhanshin.domain.etc.SearchCondition" resultType="com.project.poinhanshin.domain.map.MapBoardDto">
+        SELECT u.id, mb.mapboard_userno , mb.mapboardno , mb.mapboard_title, mb.mapboard_content ,  mb.missingtime , mb.missingaddress , mb.latitude , mb.longitude , mb.mapboard_reg_date , mb.mapboard_viewcount , mb.mapboard_ani_category , mb.writertype, mb.fileAttached
+        FROM mapboard mb, users u
+        WHERE mb.mapboard_userno = u.userno
+        and
+        mb.missingaddress LIKE concat('%' , #{keyword} ,'%')
+        and
+        <include refid="writeTypeChoose"/>
+        and
+        <include refid="aniCategoryChoose"/>
+        ORDER BY mb.mapboardno DESC
+        LIMIT #{offset} , #{pageSize}
+    </select>
+    <select id="selectMapBoardOne" parameterType="int" resultType="com.project.poinhanshin.domain.map.MapBoardDto">
+        SELECT u.id , mb.mapboard_userno , mb.mapboardno , mb.mapboard_title , mb.mapboard_content , mb.missingtime , mb.missingaddress , mb.latitude , mb.longitude , mb.mapboard_reg_date , mb.mapboard_viewcount , mb.mapboard_ani_category , mb.writertype, mb.fileAttached
+        FROM mapboard mb , users u
+        WHERE mb.mapboard_userno = u.userno and mb.mapboardno = ${mapboardno}
+    </select>
+    <insert id="insertMapBoard" parameterType="com.project.poinhanshin.domain.map.MapBoardDto">
+        INSERT INTO mapboard
+            (mapboard_userno , mapboard_title , mapboard_content ,  missingtime , missingaddress , latitude , longitude , mapboard_reg_date , mapboard_viewcount , mapboard_ani_category , writertype, fileAttached)
+        VALUES (#{mapboard_userno} , #{mapboard_title} , #{mapboard_content} , #{missingtime} , #{missingaddress} , #{latitude} , #{longitude} , now() , 0 , #{mapboard_ani_category} , #{writertype}, #{fileAttached})
+    </insert>
+    <update id="updateMapBoard" parameterType="map">
+        UPDATE mapboard
+        SET mapboard_title = #{mapBoardDto.mapboard_title} , mapboard_content = #{mapBoardDto.mapboard_content} , missingtime = #{mapBoardDto.missingtime} , missingaddress = #{mapBoardDto.missingaddress} , latitude = #{mapBoardDto.latitude} , longitude = #{mapBoardDto.longitude} , mapboard_ani_category = #{mapBoardDto.mapboard_ani_category}  ,writertype = #{mapBoardDto.writertype} , fileAttached = #{mapBoardDto.fileAttached}
+        WHERE mapboard_userno = #{loginUser} and mapboardno = #{mapBoardDto.mapboardno}
+    </update>
+    <delete id="deleteMapBoard" parameterType="map">
+        DELETE FROM mapboard
+        WHERE mapboard_userno = #{loginUser} and mapboardno = #{mapboardno}
+    </delete>
+    <select id="selectRecentMapBoardNo" parameterType="int" resultType="int">
+        SELECT mapboardno
+        FROM mapboard
+        WHERE mapboard_userno = #{mapboard_userno}
+        ORDER BY mapboardno DESC
+        LIMIT 1
+    </select>
+    <update id="mapBoardUpdateFileAttached" parameterType="map">
+        UPDATE mapboard
+        SET fileAttached = #{fileAttached}
+        WHERE mapboardno = #{mapboardno}
+    </update>
+    <select id="SelectMyMap" parameterType="int" resultType="com.project.poinhanshin.domain.map.MapBoardDto">
+        SELECT u.id, mb.mapboard_userno , mb.mapboardno , mb.mapboard_title, mb.mapboard_content ,  mb.missingtime , mb.missingaddress , mb.latitude , mb.longitude , mb.mapboard_reg_date , mb.mapboard_viewcount , mb.mapboard_ani_category , mb.writertype, mb.fileAttached
+        FROM mapboard mb, users u, mypage mp
+        WHERE mp.mypage_userno = u.userno and mp.mypage_mapboardno = mb.mapboardno and mp.mypage_userno = #{userno}
+    </select>
+
+    <select id="WriteMyMap" parameterType="int" resultType="com.project.poinhanshin.domain.map.MapBoardDto">
+        SELECT u.id, mb.mapboard_userno , mb.mapboardno , mb.mapboard_title, mb.mapboard_content ,  mb.missingtime , mb.missingaddress , mb.latitude , mb.longitude , mb.mapboard_reg_date , mb.mapboard_viewcount , mb.mapboard_ani_category , mb.writertype, mb.fileAttached
+        FROM mapboard mb, users u
+        WHERE mb.mapboard_userno = u.userno and mb.mapboard_userno = #{userno}
+    </select>
+    <sql id="writeTypeChoose">
+        <choose>
+            <when test="writerType == 0">
+                writertype = 0
+            </when>
+            <when test="writerType == 1">
+                writertype = 1
+            </when>
+            <otherwise>
+                TRUE
+            </otherwise>
+        </choose>
+    </sql>
+    <sql id="aniCategoryChoose">
+        <choose>
+            <when test="ani_category == 0">
+                mapboard_ani_category = 0
+            </when>
+            <when test="ani_category == 1">
+                mapboard_ani_category = 1
+            </when>
+            <otherwise>
+                TRUE
+            </otherwise>
+        </choose>
+    </sql>
+</mapper>

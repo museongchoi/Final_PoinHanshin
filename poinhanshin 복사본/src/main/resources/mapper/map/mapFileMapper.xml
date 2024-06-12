@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.map.MapFileMapper">
+    <select id="MapBoardSelectFile" parameterType="int" resultType="com.project.poinhanshin.domain.map.MapBoardFileDto">
+        SELECT mapboardno, mapboardfileno, reg_date, original_file_name, stored_file_name, fileSize
+        FROM mapboardFile
+        WHERE mapboardno = #{mapboardno}
+    </select>
+
+    <select id="MapBoardSelectFileName" parameterType="int" resultType="String">
+        SELECT stored_file_name
+        FROM mapboardFile
+        WHERE mapboardno = #{mapboardno}
+    </select>
+
+    <insert id="MapBoardInsertFile" parameterType="com.project.poinhanshin.domain.map.MapBoardFileDto">
+        INSERT INTO mapboardFile(mapboardno, reg_date, original_file_name, stored_file_name, fileSize)
+        VALUES (#{mapboardno}, now(), #{original_file_name}, #{stored_file_name}, #{fileSize})
+    </insert>
+
+    <delete id="MapBoardDeleteFile" parameterType="String">
+        DELETE FROM mapboardFile
+        WHERE stored_file_name = #{stored_file_name}
+    </delete>
+
+    <select id="MapBoardSelectCnt" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM mapboardFile
+        WHERE mapboardno = #{mapboardno}
+    </select>
+</mapper>

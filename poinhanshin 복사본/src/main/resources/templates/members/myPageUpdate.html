@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>회원정보수정</h1>
+아이디: <span th:text="${loginUser.id}"></span><br>
+비밀번호: <span th:text="${loginUser.password}"></span><br>
+이름: <span th:text="${loginUser.name}"></span><br>
+나이: <span th:text="${loginUser.age}"></span><br>
+전화번호: <span th:text="${loginUser.phnum}"></span><br>
+메일: <span th:text="${loginUser.mail}"></span>
+주소: <span th:text="${loginUser.address}"></span><br>
+<br><br><br><br><br>
+<form method="post" th:action>
+    아이디: <input type="text" name="id" th:value="${loginUser.id}"><br>
+    비밀번호: <input type="password" name="password" th:value="${loginUser.password}"><br>
+    이름: <input type="text" name="name" th:value="${loginUser.name}"><br>
+    나이: <input type="text" name="age" th:value="${loginUser.age}"><br>
+    전화번호: <input type="text" name="phnum" th:value="${loginUser.phnum}"><br>
+    메일: <input type="text" name="mail" th:value="${loginUser.mail}"><br>
+    주소: <input type="text" name="address" th:value="${loginUser.address}"><br>
+    <input type="submit" th:value="수정하기">
+</form>
+</body>
+</html>

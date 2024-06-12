@@ -1,0 +1,363 @@
+<!DOCTYPE HTML>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>임보자게시글 등록</title>
+    <!-- bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--fontawesome&기타-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="/css/commonstyle.css" rel="stylesheet">
+    <!--jquery-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!--datetimepicker-->
+    <link rel="stylesheet" type="text/css" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <!--dropZone-->
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css"/>
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+
+</head>
+<script th:if="${msg} == 'NO_INSERT'">alert("게시글을 등록하지 못했습니다.")</script>
+<script th:if="${msg} == 'FAIL_INSERT'">alert("게시글을 등록 실패했습니다.")</script>
+<style>
+    #att_zone{
+        outline: 2px dashed #92b0b3 ;
+        outline-offset:-10px;
+        text-align: center;
+        transition: all .15s ease-in-out;
+        width: 100%;
+        height: 200px;
+    }
+</style>
+
+<body layout:fragment="content">
+<div class="page" id="page">
+    <form id="form" action="" method="post" enctype="multipart/form-data" >
+        <input type="hidden" name="_method" value="put" />
+
+        <!--페이지 정보 및 아이디-->
+        <input type="hidden" name="page" th:value="${sc.getPage()}" />
+        <input type="hidden" name="pageSize" th:value="${sc.getPageSize()}" />
+        <input type="hidden" name="keyword" th:value="${sc.getKeyword()}"/>
+
+        <!-- 필수 전송 데이터  -->
+        <input type="hidden" name="loginUser" id="loginUser" th:value="${loginUser.userno}" />
+        <input type="hidden" name="protectboard_userno" id="protectboard_userno" th:value="${protectboard.protectboard_userno}" />
+        <input type="hidden" name="protectboardno" id="protectboardno"th:value="${protectboard.protectboardno}"/>
+        <input type="hidden" name="protectboard_ani_category" id="protectboard_ani_category" th:value="${protectboard.protectboard_ani_category}"/>
+        <input type="hidden" name="protectboard_reg_date" id="protectboard_reg_date" th:value="${#dates.format(protectboard.protectboard_reg_date, 'yyyy-MM-dd HH:ss')}"/>
+        <input type="hidden" name="protectstatus" id="protectstatus" th:value="${protectboard.protectstatus}"/>
+        <input type="hidden" name="fileAttached" id="fileAttached" th:value="${protectboard.fileAttached}"/>
+
+        <!-- 품종 -->
+        <section class="container">
+            <div class="row">
+                <div class="col-sm-2">
+                    <select class="form-select" name="protectboard_ani_category">
+                        <option value="true" th:selected="${protectboard.protectboard_ani_category == true}">고양이</option>
+                        <option value="false" th:selected="${protectboard.protectboard_ani_category == false}">강아지</option>
+                    </select>
+                </div>
+                <label class="col-sm-2 col-form-label"></label>
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text" id="inputGroup-sizing-sm">품종</span>
+                        <input type="text" name="breeds" id="breeds" class="form-control"  placeholder="품종을 입력해주세요" th:value="${protectboard.breeds}" >
+                    </div>
+                </div>
+            </div>
+
+            <!-- 시작일 , 마감일 -->
+            <div class="row">
+                <div class="input-group date">
+                        <span class="input-group-append">
+                            <span class="input-group-text bg-light d-block">
+                            <i class="fa fa-calendar"></i>
+                            </span>
+                        </span>
+                    <input  type="text" class="form-control modifyMode" name="starttime" id="startDate" readonly th:value="${#dates.format(protectboard.starttime, 'yyyy-MM-dd HH:ss')}"/>
+                    <span class="input-group-text bg-light d-block">
+                            <i class="fa fa-calendar"></i>
+                    </span>
+                    <input type="text" class="form-control modifyMode" name="deadline" id="endDate" readonly  th:value="${#dates.format(protectboard.deadline, 'yyyy-MM-dd HH:ss')}"/>
+                </div>
+            </div>
+        </section>
+
+
+        <div class="form-group row p-2">
+            <!-- 제목 -->
+            <label class="col-sm-2 col-form-label"><strong>제목</strong></label>
+            <div class="col-sm-10">
+                <textarea
+                        type="text"
+                        name="protectboard_title"
+                        class="form-control"
+                        id="protectboard_title"
+                        th:text="${protectboard.protectboard_title}">
+                </textarea>
+                </label>
+            </div>
+                <!-- 내용 -->
+            <label class="col-sm-2 col-form-label"><strong>내용</strong></label>
+            <div class="col-sm-10">
+                 <textarea type="text" name="protectboard_content" class="form-control" id="protectboard_content" th:text="${protectboard.protectboard_content}" style="height: 300px;"></textarea>
+                </label>
+            </div>
+        </div>
+
+        <!-- dropzone -->
+        <div class="dropzone" id="my-dropzone" ></div>
+
+        <!-- 수정 버튼  -->
+        <div class="row p-5">
+            <div class="col-sm-2 mx-auto">
+                <button type="button" id="submitBtn" class="btn btn-primary submitBtn modifyMode" role="button">수정</button>
+            </div>
+        </div>
+            <!-- 목록 버튼 -->
+        <div class="hstack gap-3">
+            <div class="p-2 ms-auto">
+                <button type="button" class="btn btn-secondary"
+                        th:onclick="|location.href='@{/protectboard/list(page = ${sc.getPage} , pageSize = ${sc.getPageSize} , keyword=${sc.getKeyword} )}'|">목록
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="/js/date-time-picker.js"></script>
+<script>
+    // 드롭존 스크립트
+    var dropzone;
+    Dropzone.autoDiscover = false;
+    document.addEventListener("DOMContentLoaded" ,function(){
+         // deprecated 된 옵션. false로 해놓는걸 공식문서에서 명시
+
+        dropzone = new Dropzone('#my-dropzone', {
+
+            url: 'http://localhost:8080/protectboard/uploadFile', // 파일을 업로드할 서버 주소 url.
+            method: 'post', // 기본 post로 request 감. put으로도 할수있음
+
+            autoProcessQueue: false, // 자동으로 보내기. true : 파일 업로드 되자마자 서버로 요청, false : 서버에는 올라가지 않은 상태. 따로 this.processQueue() 호출시 전송
+            clickable: true, // 클릭 가능 여부
+            autoQueue: false, // 드래그 드랍 후 바로 서버로 전송
+            createImageThumbnails: true, //파일 업로드 썸네일 생성
+
+            thumbnailHeight: 120, // Upload icon size
+            thumbnailWidth: 120, // Upload icon size
+
+            maxFiles: 4, // 업로드 파일수
+            maxFilesize: 100000, // 최대업로드용량 : 100MB
+            paramName: 'file', // 서버에서 사용할 formdata 이름 설정 (default는 file)
+            parallelUploads: 1, // 동시파일업로드 수(이걸 지정한 수 만큼 여러파일을 한번에 넘긴다.)
+            uploadMultiple: false, // 다중업로드 기능
+            timeout: 300000, //커넥션 타임아웃 설정 -> 데이터가 클 경우 꼭 넉넉히 설정해주자
+
+            addRemoveLinks: true, // 업로드 후 파일 삭제버튼 표시 여부
+            dictRemoveFile: '삭제', // 삭제버튼 표시 텍스트
+            acceptedFiles: '.jpeg,.jpg,.png,.gif,.JPEG,.JPG,.PNG,.GIF',
+
+            init: function () {
+                // 최초 dropzone 설정시 init을 통해 호출
+                console.log('최초 실행');
+                let myDropzone = this; // closure 변수 (화살표 함수 쓰지않게 주의)
+            },
+        });
+    })
+
+</script>
+<script th:inline="javascript" defer>
+
+    let currentFileAttached = $('input[name=fileAttached]').val();
+    let protectbn = [[${protectboard.protectboardno}]];
+
+    // 해당 게시물의 첨부파일 데이터를 DB에서 가져온다.
+
+    let showImgList = function () {
+        $.ajax({
+            type: 'GET',
+            url: '/protectboard/file?protectboardno=[[${protectboard.protectboardno}]]',
+            dataType: 'json',
+            success: function (protectBoardFileDtoList) {
+                displayImg(protectBoardFileDtoList);
+                console.log('이미지조회성공');
+            },
+            error: function () {alert("ERROR"); }
+        });
+    }
+    // 해당 게시물이 첨부파일을 가지고 있으면 dropzone에 보여준다.
+    let displayImg = function(protectBoardFileDtoList){
+        protectBoardFileDtoList.forEach(function(protectBoardFileDto){
+            let mockFile = {name: protectBoardFileDto.stored_file_name , size : protectBoardFileDto.fileSize}
+            dropzone.displayExistingFile(mockFile , 'http://localhost:8080/upload/protectboard/'+protectBoardFileDto.stored_file_name);
+        });
+    }
+
+
+
+
+    // document ready start
+    $(document).ready(function(){
+        // 첨부파일 드롭존에 전달
+        showImgList();
+
+        // 드롭존 파일 제거시 실제 경로와 DB에서 제거
+        dropzone.on("removedfile" , function(dataURL){
+            $.ajax({
+                type : 'DELETE',
+                url : '/protectboard/remove',
+                headers : {"content-type" : "application/json"},
+                dataType : 'text',
+                data : JSON.stringify(dataURL,["dataURL"]),
+                success: function(data){
+                    console.log(data)
+                },
+                error: function(request ,status , error){
+                    console.log("code: " + request.status)
+                    console.log("message: " + request.responseText)
+                    console.log("error: " + error);
+                }
+            });
+        });
+
+        let formCheck = function(){
+            if($('#breeds').val().trim() == ""){
+                alert("품종을 입력해주세요.");
+                return false;
+            }
+            if($('#startDate').val().trim() == ""){
+                alert("시작일을 입력해주세요.");
+                return false;
+            }
+            if($('#endDate').val().trim() == ""){
+                alert("종료일을 입력해주세요.")
+                return false;
+            }
+            if($('#protectboard_title').val().trim() == ""){
+                alert("제목을 입력해주세요.");
+                return false;
+            }
+            if($('#protectboard_content').val().trim()==""){
+                alert("내용을 입력해주세요.");
+                return false;
+            }
+            return true;
+        }
+
+        // 수정 버튼 클릭시
+        $("#submitBtn").on("click",function(){
+            if(!formCheck()){
+                return false;
+            }
+            if(!confirm("수정하시겠습니까 ?")) return;
+            console.log("게시물 수정 및 이미지 업로드");
+
+            let protectboard_userno = $('#protectboard_userno').val()
+            let protectboardno = $('#protectboardno').val();
+            let protectboard_title = $('#protectboard_title').val();
+            let protectboard_content = $('#protectboard_content').val();
+            let breeds = $('#breeds').val();
+            let protectboard_ani_category = $('select[name=protectboard_ani_category] option:selected').val();
+            let protectstatus = $('#protectstatus').val();
+            let starttime = $('#startDate').val();
+            let deadline = $('#endDate').val();
+            let fileAttached = [[${protectboard.fileAttached}]]
+            let loginUser = $('#loginUser').val();
+
+            if (dropzone.getRejectedFiles().length > 0) {
+                let file = dropzone.getRejectedFiles();
+                console.log('거부된 파일이 있습니다.', file);
+                return;
+            }
+
+            // 드롭존에서 파일 가져온다.
+            let files = dropzone.files;
+
+            // 전송할 폼 객체 생성
+            let formData = new FormData();
+
+            if(files.length != 0) {
+                for (let i = 0; i < files.length; i++) {
+                    formData.append("protectboardFile", files[i]);
+                }
+            }
+
+            /*
+            //수정시 조건을 이미지가 없는(fileAttached =0)  게시판으로 보내서 처리
+             if(files.length != null || files.length != undefined || files.length != NaN) {
+                for(let i = 0 ; i < files.length ; i++){
+                   formData.append("protectboardFile" , files[i]);
+                  formData.append("fileAttached" , 0 );
+                }
+              }else{
+                formData.append("fileAttached" , 1 );
+              }
+              */
+
+            // 폼 데이터 등록
+            formData.append("protectboard_userno" , protectboard_userno);
+            formData.append("protectboardno" , protectboardno);
+            formData.append("protectboard_title" , protectboard_title);
+            formData.append("protectboard_content",protectboard_content);
+            formData.append("breeds" , breeds);
+            formData.append("protectboard_ani_category" , protectboard_ani_category);
+            formData.append("protectstatus" , protectstatus);
+            formData.append("starttime" , new Date(starttime));
+            formData.append("deadline", new Date(deadline));
+            formData.append("fileAttached",fileAttached);
+            formData.append("loginUser" , loginUser);
+
+            let pbn;
+            $.ajax({
+                type : 'POST',
+                url : '/protectboard/modify',
+                data : formData,
+                async : false,
+                enctype: "multipart/form-data",
+                processData : false,
+                contentType : false,
+                success :function(data){
+                    pbn = data;
+                },
+                complete : function(){
+                         let form = $('#form');
+                    form.attr("action", [[@{/protectboard/read}]]);
+                    form.attr("method","get");
+                    form.submit();
+                    console.log(제출성공);
+                }
+            });
+
+        
+
+            let setQueryString = function(key , value){
+                let str = key+'='+value+'&';
+                return str;
+            };
+        });
+
+    });
+    // document ready end
+    var submitted = false;
+
+    $(document).ready(function() {
+        $("form").submit(function () {
+
+            submitted = true;
+        });
+
+        window.onbeforeunload = function () {
+            if (!submitted) {
+                return 'Do you really want to leave the page?';
+            }
+
+        };
+    });
+
+</script>
+</body>
+</html>

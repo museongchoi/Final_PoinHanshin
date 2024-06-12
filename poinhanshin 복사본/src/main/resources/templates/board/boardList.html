@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글썸네일</title>
+    <link href="/css/commonstyle.css" rel="stylesheet">
+ <link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<body layout:fragment="content">
+<script th:if="${msg} == 'SUCCESS_REMOVE'">alert("게시글을 삭제했습니다.")</script>
+<script th:if="${msg} == 'NO_LOGIN'"> alert("로그인이 필요합니다.")</script>
+<div class="page">
+
+<!--인기글 상위 3개만 출력 -->
+
+<div class="row justify-content-center">
+    <th:block th:each="topBoardDto ,i :  ${topBoardDtoList}">
+    <div class="col-sm-3 m-3" style="color:black" >
+        <span class="card gap-1">
+            <a th:href="@{/board/read(boardno=${topBoardDto.boardno})}">
+            <div class="card-body" >
+              <h5 class="card-title" th:text="${#strings.abbreviate(topBoardDto.board_title,17)}">제목</h5>
+              <p class="card-text" th:text="${#strings.abbreviate(topBoardDto.board_content,15)}">내용</p>
+                <i class="fas fa-user-edit"></i>&nbsp<small class="card-text" th:text="${topBoardDto.id}">작성자</small>
+              <div class="text-end"><i class="fas fa-heart"></i>&nbsp<small class="card-subtitle sm-1" th:text="${topBoardDto.likecount}"></small>
+              </div>
+            </div>
+            </a>
+        </span>
+    </div>
+    </th:block>
+</div>
+
+
+<div class="container">
+    <form id="form" name="search-form" action="/board/list" method="get" class="row m-2">
+        <div class="col-sm-5">
+            <div class="btn-group" role="group">
+                <input type="radio" name="ani_category" value="2" class="btn-check" id="all-check" autocomplete="off" th:checked="${sc.ani_category eq 2}">
+                <label class="btn btn-outline" for="all-check" style="background-color:#9C9EFE;">전체</label>
+
+                <input type="radio" name="ani_category" value="0" class="btn-check" id="dog-check" autocomplete="off" th:checked="${sc.ani_category eq 0}">
+                <label class="btn btn-outline" for="dog-check" style="background-color:#9C9EFE;">강아지</label>
+
+                <input type="radio" name="ani_category" value="1" class="btn-check" id="cat-check" autocomplete="off" th:checked="${sc.ani_category eq 1}">
+                <label class="btn btn-outline" for="cat-check" style="background-color:#9C9EFE;">고양이</label>
+            </div>
+        </div>
+        <div class="col-sm-3" id="spacer"></div>
+    
+        <div class="col-sm-4">
+
+            <div class="input-group">
+                <div class="input-group-text" id="btnGroupAddon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                </div>
+                <input type="hidden" name="page" th:value="${sc.getPage()}"/>
+                <input type="hidden" name="pageSize" th:value="${sc.getPageSize()}"/>
+
+                <input type="text" name="keyword" class="form-control" placeholder="Input group example" aria-label="Input group example" aria-describedby="btnGroupAddon">
+                <input type="button" id="searchBtn" class="btn btn-outline" style="background-color:#9C9EFE;" value="검색">
+            </div>
+
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-sm-12 hstack">
+            <button type="button" class="btn btn-outline ms-auto" style="background-color:#9C9EFE;"
+                    th:onclick="|location.href='@{/board/write(page = ${sc.getPage} , pageSize = ${sc.getPageSize} , keyword=${sc.getKeyword})}'|">
+                글작성</button>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover table-sm" id="boardtable" style="border-color:#9C9EFE">
+        <thead>
+        <tr>
+            <th scope="col" class="th_title">제목</th>
+            <th scope="col" class="th_thumbnail">이미지</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr  th:each="boardDto : ${boardDtoList}"> 
+                <td style="cursor:pointer;" th:onClick="|location.href='@{/board/read(boardno=${boardDto.boardno}, page=${sc.getPage()} , pageSize=${sc.getPageSize()} , keyword=${sc.getKeyword()})}'|">
+                    <br>
+                    <div>
+                        <span th:if="${boardDto.board_ani_category == false}" class="badge rounded-pill" style="font-size: 16px;background-color:#AFB4FF;">강아지</span>
+                        <span th:if="${boardDto.board_ani_category == true}"class="badge rounded-pill" style="font-size: 16px;background-color:#AFB4FF;">고양이</span><h5 th:text="${#strings.abbreviate(boardDto.board_title,40)}" style="color:black">----제목---</h5>
+                    </div>
+                    <br>
+                    <div class="m-1">
+                        <!-- Controller에서 따로 LoginID 전달해서 수정해야 함 , 로그인 연결 후 진행 -->
+                        <i class="fas fa-user-edit"></i>&nbsp<span class="info_table" th:text="${boardDto.id}"> 유저id : 12312314</span>
+                        <i class="far fa-eye"></i>&nbsp<span class="info_table" th:text="${boardDto.board_viewcount}" > 조회수 : 42</span>
+                        <i class="fas fa-heart"></i>&nbsp<small id="likeCnt" th:text="${boardDto.likecount}"></small>
+                        &nbsp&nbsp<span class="info_table" th:text="|${#dates.format(boardDto.board_reg_date, 'yyyy-MM-dd (HH:mm:ss)')}|"> 등록일 : 2019-05-14</span>
+                    </div>
+                </td>
+                <td  class="vstack">
+                        <!-- 썸네일 이미지  -->
+                        <img th:if="${boardDto.fileAttached == 1 ? boardDto.storedFileName[0] != null : false}" class="thumbnail_wrapper mx-auto" th:src="@{|/upload/board/${boardDto.storedFileName[0]}|}" width="150px" height="150" />
+                        <img th:if="${boardDto.fileAttached == 0}" class="thumbnail_wrapper mx-auto" src="/img/empty.png" width="150px" height="150">
+                </td>
+                
+            </tr>
+
+        </tbody>
+    </table>
+</div>
+    <div class="ph-wrapper">
+        <span class="text-center" th:if="${totalCnt == 0}">게시물이 없습니다.</span>
+        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="btn-group m-auto btn-group-sm" role="group" aria-label="First group">
+                <button type="button" style="width:30px;height:40px;" class="btn btn-primary" th:if="${ph.showPrev}" th:onclick="|location.href='@{'/board/list'+${ph.sc.getQueryString(ph.beginPage - 1)}}'|">&lt;</button>
+                <th:block th:if="${not #strings.isEmpty(ph.totalCnt)}" th:each="i : ${#numbers.sequence(ph.beginPage,ph.endPage)}">
+                    <button th:if="${i !=0}" type="button" style="width:30px;height:40px" class="btn btn-secondary" th:class="${ph.sc.page == i ? 'btn btn-primary' : 'btn btn-secondary'}" th:onclick="|location.href='@{'/board/list'+${ph.sc.getQueryString(i)}}'|" th:text="${i}"></button>
+                </th:block>
+                <button type="button" style="width:30px;height:40px" class="btn btn-primary" th:if="${ph.showNext}" th:onclick="|location.href='@{'/board/list'+${ph.sc.getQueryString(ph.endPage + 1)}}'|">&gt;</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        console.log([[${topBoardDtoList}]]);
+
+        $('#searchBtn').on("click",function(){
+            let form = $('#form');
+            form.submit();
+        });
+        $('input[name=ani_category]').on("click" , function(){
+            let form = $('#form')
+            form.submit();
+        })
+
+        $('input[name=ani_category]').on("click", function (){
+            let from = $('#searchFrom');
+            from.submit();
+        })
+
+        /*<![CDATA[*/
+
+        //테스트용 콘솔창데이터확인용
+        const boardList = [[${list}]];
+        console.log(boardList);
+
+
+        function getSearchList(){
+            $.ajax({
+                type: 'GET',
+                url : "/board/Search",
+                data : $("form[name=search-form]").serialize(),
+                success : function(result){
+                    //테이블 초기화
+                    $('#boardtable > tbody').empty();
+                    if(result.length>=1){
+                        result.forEach(function(item){
+                            //결과창
+                        })
+                    }
+                }
+            })
+        }
+
+
+        /*]]>*/
+    </script>
+</div>
+</body>
+</html>

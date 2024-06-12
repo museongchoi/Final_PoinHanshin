@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.board.LikeMapper">
+    <select id="likeCheck" resultType="int" parameterType="com.project.poinhanshin.domain.board.LikeBoardDto">
+        SELECT COUNT(*)
+        FROM likeboard
+        WHERE likeboard_boardno = #{likeboard_boardno} and likeboard_userno = #{likeboard_userno}
+    </select>
+    <select id="searchLikeCnt" resultType="int" parameterType="int">
+        SELECT likecount
+        FROM board
+        WHERE boardno = #{boardno}
+    </select>
+    <insert id="addLike" parameterType="com.project.poinhanshin.domain.board.LikeBoardDto">
+        INSERT INTO likeboard (likeboard_boardno , likeboard_userno)
+        VALUES (#{likeboard_boardno} , #{likeboard_userno})
+    </insert>
+    <delete id="deleteLike" parameterType="com.project.poinhanshin.domain.board.LikeBoardDto">
+        DELETE FROM likeboard
+        WHERE likeboard_boardno = #{likeboard_boardno} and likeboard_userno = #{likeboard_userno}
+    </delete>
+    <update id="updateLikeCnt" parameterType="map">
+        UPDATE board
+        SET likecount = likecount + #{num}
+        WHERE boardno = #{boardno}
+    </update>
+</mapper>

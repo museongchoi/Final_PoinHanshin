@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>게시물 수정</title>
+    <link rel="stylesheet" type="text/css" href="/css/map/mapst.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>  
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css"/>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+    <!--datetimepicker-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script type="text/javascript" src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=c4fc6b86f6659d02a7d040b2f3536a81&libraries=services"></script>
+    <!-- 드롭존 -->
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+</head>
+<body layout:fragment="content">
+<div class="container">
+    <h2>게시물 수정</h2>
+    <form id="form"method="POST" action="{{ url_for('create_post') }}">
+        <!-- 페이지 정보 및 로그인 정보-->
+        <input type="hidden" name="page" th:value="${sc.page}"/>
+        <input type="hidden" name="pageSize" th:value="${sc.pageSize}"/>
+        <input type="hidden" name="keyword" th:value="${sc.keyword}"/>
+        <input type="hidden" name="ani_category" th:value="${sc.ani_category}"/>
+        <!--<input type="hidden" name="missingAddress" th:value="${sc.ani_category}"/>-->
+        <input type="hidden" name="mapboardno" id="mapboardno" th:value="${mapBoardDto.mapboardno}"/>
+        <input type="hidden" name="mapboard_userno" id="mapboard_userno" th:value="${mapBoardDto.mapboard_userno}"/>
+        <input type="hidden" name="fileAttached" id="fileAttached" th:value="${mapBoardDto.fileAttached}"/>
+        <input type="hidden" name="loginUser" id="loginUser" th:if="${loginUser != null}" th:value="${loginUser.userno}"/>
+        <!-- 임시 로그인을 위함 -->
+        <input type="hidden" name="loginUser" th:unless="${loginUser != null}" value="0"/>
+
+
+        <div class="row">
+            <div class="col-md-4">
+                <!-- 드롭다운 필터 -->
+                <div class="mb-3">
+                    <label class="form-label" for="animal-filter">동물 선택:</label>
+                    <select class="form-select" id="animal-filter" name="mapboard_ani_category">
+                        <option value="0" th:selected="${mapBoardDto.mapboard_ani_category == false}" >강아지</option>
+                        <option value="1" th:selected="${mapBoardDto.mapboard_ani_category == true}">고양이</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <!-- 신고자/발견자 선택 드롭다운 필터 -->
+                <div class="mb-3">
+                    <label class="form-label" for="author-filter">신고자/발견자 선택:</label>
+                    <select class="form-select" id="author-filter" name="writertype">
+                        <option value="0" th:selected="${mapBoardDto.writertype == false}">신고자</option>
+                        <option value="1" th:selected="${mapBoardDto.writertype == true}">발견자</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-3">
+                    <label class="form-label" for="missingaddress">실종/ 발견 장소를 선택해주세요:</label>
+                    <input type="text" id="missingaddress" placeholder="클릭시 주소 찾기" name="missingaddress" th:value="${mapBoardDto.missingaddress}" onclick="mapadd_Postcode()" readonly>
+                    <div id="map" style="width: 100%; height: 400px; display: none;"></div>
+                    <input type="hidden" name="latitude" id="latitude" th:value="${mapBoardDto.latitude}"/>
+                    <input type="hidden" name="longitude" id="longitude" th:value="${mapBoardDto.longitude}"/>
+                </div>
+                <!--&lt;!&ndash; 지역 선택 드롭다운 필터 &ndash;&gt;
+                <div class="mb-3">
+                  <label class="form-label" for="locatin-filter">지역 선택:</label>
+                  <input type="text" id="locatin-filter" placeholder="지역">
+                  <input type="button" class="btn btn-outline-dark" onclick="map_Postcode()" value="지역 찾기">
+                </div>-->
+            </div>
+        </div>
+
+
+        <div class="mb-3">
+            <label class="form-label">제목:</label>
+            <input type="text" class="form-control" name="mapboard_title" id="mapboard_title" th:value="${mapBoardDto.mapboard_title}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" >내용:</label>
+            <textarea class="form-control" style="min-height: 20vh" name="mapboard_content" id="mapboard_content" th:text="${mapBoardDto.mapboard_content}" required></textarea>
+        </div>
+        <div class="input-group mb-3">
+            <span class="input-group" id="basic-addon1"><i class="fa fa-calendar"></i></span>
+
+            <input type="text" class="form-control" name="time" id="missingtime" th:value="${#dates.format(mapBoardDto.missingtime, 'yyyy-MM-dd HH:ss')}" aria-describedby="basic-addon1" required autocomplete="off">
+
+        </div>
+
+        <!-- 드롭존 -->
+        <div class="dropzone" id="my-dropzone" ></div>
+        <div class="center-text">
+            <button class="reg-button" type="button" id="modifyBtn">수정</button>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="/js/map/date-time.js"></script>
+<script>
+    // 드롭존 스크립트
+    var dropzone;
+    Dropzone.autoDiscover = false; // deprecated 된 옵션. false로 해놓는걸 공식문서에서 명시
+    document.addEventListener("DOMContentLoaded" ,function(){
+
+        dropzone = new Dropzone('#my-dropzone', {
+
+            url: 'http://localhost:8080/mapBoard/file', // 파일을 업로드할 서버 주소 url.
+            method: 'post', // 기본 post로 request 감. put으로도 할수있음
+
+            autoProcessQueue: false, // 자동으로 보내기. true : 파일 업로드 되자마자 서버로 요청, false : 서버에는 올라가지 않은 상태. 따로 this.processQueue() 호출시 전송
+            clickable: true, // 클릭 가능 여부
+            autoQueue: false, // 드래그 드랍 후 바로 서버로 전송
+            createImageThumbnails: true, //파일 업로드 썸네일 생성
+
+            thumbnailHeight: 120, // Upload icon size
+            thumbnailWidth: 120, // Upload icon size
+
+            maxFiles: 10, // 업로드 파일수
+            maxFilesize: 100000, // 최대업로드용량 : 100MB
+            paramName: 'file', // 서버에서 사용할 formdata 이름 설정 (default는 file)
+            parallelUploads: 1, // 동시파일업로드 수(이걸 지정한 수 만큼 여러파일을 한번에 넘긴다.)
+            uploadMultiple: false, // 다중업로드 기능
+            timeout: 300000, //커넥션 타임아웃 설정 -> 데이터가 클 경우 꼭 넉넉히 설정해주자
+
+            addRemoveLinks: true, // 업로드 후 파일 삭제버튼 표시 여부
+            dictRemoveFile: '삭제', // 삭제버튼 표시 텍스트
+            acceptedFiles: '.jpeg,.jpg,.png,.gif,.JPEG,.JPG,.PNG,.GIF',
+
+            init: function () {
+                // 최초 dropzone 설정시 init을 통해 호출
+                console.log('최초 실행');
+                let myDropzone = this; // closure 변수 (화살표 함수 쓰지않게 주의)
+            },
+
+        });
+    })
+</script>
+<script defer>
+        let showImgList = function () {
+            $.ajax({
+                type: 'GET',
+                url: '/mapBoard/file?mapboardno=' + [[${mapBoardDto.mapboardno}]],
+                dataType: 'json',
+                success: function (mapBoardFileDtoList) {
+                    displayImg(mapBoardFileDtoList)
+                    console.log('이미지조회성공');
+                },
+                error: function () {alert("ERROR"); }
+            });
+        }
+        let displayImg = function(mapBoardFileDtoList){
+            mapBoardFileDtoList.forEach(function(mapBoardFileDto){
+                let mockFile = {name: mapBoardFileDto.stored_file_name , size : mapBoardFileDto.fileSize}
+                dropzone.displayExistingFile(mockFile , 'http://localhost:8080/upload/mapboard/'+mapBoardFileDto.stored_file_name);
+            });
+        }
+    $(document).ready(function(){
+
+        // 드롭존에 이미지 불러오기
+        showImgList();
+
+        dropzone.on("removedfile" , function(dataURL){
+            $.ajax({
+                type : 'DELETE',
+                url : '/mapBoard/remove',
+                headers : {"content-type" : "application/json"},
+                dataType : 'text',
+                data : JSON.stringify(dataURL,["dataURL"]),
+                success: function(data){
+                    console.log(data)
+                },
+                error: function(request ,status , error){
+                    console.log("code: " + request.status)
+                    console.log("message: " + request.responseText)
+                    console.log("error: " + error);
+                }
+            })
+        })
+
+
+        $('#modifyBtn').on('click', function () {
+            if(!confirm("수정하시겠습니까 ?")) return;
+            console.log("게시물 수정 및 이미지 업로드");
+
+            let mapboardno = $('#mapboardno').val();
+            let mapboard_userno = $('#mapboard_userno').val()
+            let mapboard_ani_category = $('#animal-filter').val();
+            let writertype = $('#author-filter').val();
+            let mapboard_title =$('#mapboard_title').val();
+            let mapboard_content = $('#mapboard_content').val();
+            let missingtime = $('#missingtime').val();
+            let missingaddress = $('#missingaddress').val();
+            let latitude = $('#latitude').val();
+            let longitude = $('#longitude').val();
+            let fileAttached = $('#fileAttached').val();
+            let loginUser = $('input[name=loginUser]').val();
+
+            // 실제 기능을 여기에 추가
+            if (dropzone.getRejectedFiles().length > 0) {
+                let file = dropzone.getRejectedFiles();
+                console.log('거부된 파일이 있습니다.', file);
+            }
+
+            // 드롭존에서 파일 가져온다.
+            let files = dropzone.files;
+
+            let formData = new FormData();
+
+            if(files.length != 0) {
+                for (let i = 0; i < files.length; i++) {
+                    formData.append("mapBoardFile", files[i]);
+                }
+            }
+            /*//수정시 조건을 이미지가 없는(fileAttached =0)  게시판으로 보내서 처리
+            if(files.length != null || files.length != undefined || files.length != NaN) {
+                    for(let i = 0 ; i < files.length ; i++){
+                        formData.append("mapBoardFile" , files[i]);
+                        formData.append("fileAttached" , 0 );
+                    }
+            }else{
+               formData.append("fileAttached" , 1 );
+            }
+*/
+                formData.append("mapboardno" , mapboardno );
+                formData.append("mapboard_userno" , mapboard_userno);
+                formData.append("mapboard_ani_category" , mapboard_ani_category);
+                formData.append("writertype",writertype);
+                formData.append("mapboard_title" , mapboard_title);
+                formData.append("mapboard_content" , mapboard_content);
+                formData.append("missingtime" , new Date(missingtime) );
+                formData.append("missingaddress", missingaddress);
+                formData.append("latitude" , latitude);
+                formData.append("longitude", longitude);
+                formData.append("loginUser" , loginUser );
+                formData.append("fileAttached" , fileAttached );
+
+
+                $.ajax({
+                    type : 'POST',
+                    url : '/map/modify',
+                    data : formData,
+                    async : false,
+                    enctype: "multipart/form-data",
+                    processData : false,
+                    contentType : false,
+                    success :function(){},
+                    complete : function(){
+                        let form = $('#form');
+                        form.attr("action" , "/map/read");
+                        form.attr("method" , "get");
+                        form.submit();
+                    }
+                });
+            });//버튼이벤트끝
+            
+        });//document로드 이벤트끝
+
+    document.querySelector('.delete-button').addEventListener('click', function () {
+        if(!confirm("삭제하시겠습니까 ?")) return;
+        console.log("게시물 삭제 완료");
+
+        let form = $('#form') ;
+        form.attr("action" , "/map/remove");
+        form.attr("method" , "post");
+        form.submit();
+    });
+
+    //주소 검색 카카오(다음)api(활용시 주소 검색후 map으로 다시 검색후 경도/위도 반환 가능)
+        //주소 검색 카카오(다음)api(활용시 주소 검색후 map으로 다시 검색후 경도/위도 반환 가능)
+        function mapadd_Postcode() {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    // 주소를 입력받았을 때 실행할 코드
+                    console.log(data.x);
+                    console.log(data.y);
+                    // 입력된 주소를 missingaddress 엘리먼트의 값으로 설정
+                    document.getElementById('missingaddress').value = data.address;
+
+                    // 커서를 상세주소 필드로 이동
+                    document.getElementById("missingaddress").focus();
+
+                    geocoder.addressSearch(data.address, function(results, status) {
+                        // 정상적으로 검색이 완료됐으면
+                        if (status === daum.maps.services.Status.OK) {
+
+                            var result = results[0]; //첫번째 결과의 값을 활용
+
+                            // 해당 주소에 대한 좌표를 받아서
+                            var coords = new daum.maps.LatLng(result.y, result.x);
+                            // 지도를 보여준다.
+                            mapContainer.style.display = "block";
+                            map.relayout();
+                            // 지도 중심을 변경한다.
+                            map.setCenter(coords);
+
+                            $('#longitude').val(result.x);
+                            $('#latitude').val(result.y);
+
+                            // 마커를 결과값으로 받은 위치로 옮긴다.
+                            marker.setPosition(coords)
+                        }
+                    });
+                }
+
+            }).open();
+        }
+
+        // Daum 지도 API를 사용하여 지도를 표시
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+            mapOption = {
+                center: new kakao.maps.LatLng(37.56682, 126.97865), // 지도의 중심좌표
+                level: 3, // 지도의 확대 레벨
+                mapTypeId: kakao.maps.MapTypeId.ROADMAP // 지도종류
+            };
+        // 지도를 생성한다
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+        var geocoder = new daum.maps.services.Geocoder();
+
+        var markerPosition = new kakao.maps.LatLng(37.19357, 127.0227);
+        var marker = new kakao.maps.Marker({
+            map: map,
+            position: markerPosition
+        });
+
+        kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
+
+            // 마커 클릭한 위치의 도로명 주소를 일겅와 missingaddress input의 값으로 설정 , 주소가 없는 경우 빈 문자열로 대치
+            searchDetailAddrFromCoords(mouseEvent.latLng, function(result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    try {
+                        $('#missingaddress').val(result[0].road_address.address_name);
+                        console.log("정상 출력 확인 : " + $('#missingaddress').val());
+                    } catch (exception) {
+                        $('#missingaddress').val("");
+                        console.log("에러 출력 확인 : " + $('#missingaddress').val());
+                    }
+                }
+            });
+            var latlng = mouseEvent.latLng;
+
+            $('#longitude').val(latlng.getLng());
+            $('#latitude').val(latlng.getLat());
+
+            marker.setPosition(latlng);
+
+        });
+
+        function searchDetailAddrFromCoords(coords, callback) {
+            // 좌표로 법정동 상세 주소 정보를 요청합니다
+            geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
+        }
+
+</script>
+</body>
+</html>

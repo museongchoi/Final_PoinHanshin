@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.member.MyPageMapper">
+    <update id="updateUser" parameterType="com.project.poinhanshin.domain.member.User">
+        update users
+        set id = #{id},
+            password = #{password},
+            name = #{name},
+            age = #{age},
+            phnum = #{phnum},
+            mail = #{mail},
+            address = #{address}
+       where userno = #{userno}
+    </update>
+
+    <delete id="dismissUser" parameterType="Long">
+        delete from users where userno = #{userno};
+    </delete>
+
+    <select id="selectMyBoard" parameterType="int" resultType="com.project.poinhanshin.domain.board.BoardDto">
+        SELECT u.id , b.board_userno , b.boardno , b.board_title , b.board_content , b.board_ani_category , b.board_reg_date , b.board_viewcount , b.commentcount , b.likecount , b.fileAttached
+        FROM users u, board b, mypage m
+        WHERE u.userno = b.board_userno and b.boardno = m.mypage_boardno and m.mypage_userno = #{userno}
+    </select>
+
+    <select id="writeMyBoard" parameterType="int" resultType="com.project.poinhanshin.domain.board.BoardDto">
+        SELECT u.id , b.board_userno , b.boardno , b.board_title , b.board_content , b.board_ani_category , b.board_reg_date , b.board_viewcount , b.commentcount , b.likecount , b.fileAttached
+        FROM users u, board b
+        WHERE u.userno = b.board_userno and b.board_userno = #{userno}
+    </select>
+
+    <select id="selectMyprotectboard" parameterType="int" resultType="com.project.poinhanshin.domain.protectboard.ProtectBoardDto">
+        SELECT u.id, p.protectboard_userno , p.protectboardno , p.protectboard_title , p.protectboard_content , p.breeds , p.protectboard_ani_category , p.protectboard_reg_date  , p.protectstatus , p.starttime , p.deadline ,  p.fileAttached
+        FROM users u, protectboard p, mypage m
+        WHERE u.userno = m.mypage_userno AND m.mypage_userno = #{userno} AND m.mypage_protectboardno = p.protectboardno
+    </select>
+
+    <select id="writeMyprotectboard" parameterType="int" resultType="com.project.poinhanshin.domain.protectboard.ProtectBoardDto">
+        SELECT u.id, p.protectboard_userno , p.protectboardno , p.protectboard_title , p.protectboard_content , p.breeds , p.protectboard_ani_category , p.protectboard_reg_date  , p.protectstatus , p.starttime , p.deadline ,  p.fileAttached
+        FROM users u, protectboard p
+        WHERE u.userno = p.protectboard_userno AND p.protectboard_userno = #{userno}
+    </select>
+
+    <insert id="favoriteMyProtectBoard" parameterType="Integer">
+        INSERT INTO mypage(mypage_userno, mypage_boardno,mypage_protectboardno, mypage_mapboardno) VALUES (${userno}, NULL, #{protectBoardno}, NULL);
+    </insert>
+
+    <select id="selectMyMap" parameterType="int" resultType="com.project.poinhanshin.domain.map.MapBoardDto">
+        SELECT u.id, mb.mapboard_userno , mb.mapboardno , mb.mapboard_title, mb.mapboard_content ,  mb.missingtime , mb.missingaddress , mb.latitude , mb.longitude , mb.mapboard_reg_date , mb.mapboard_viewcount , mb.mapboard_ani_category , mb.writertype, mb.fileAttached
+        FROM mapboard mb, users u, mypage mp
+        WHERE mp.mypage_userno = u.userno and mp.mypage_mapboardno = mb.mapboardno and mp.mypage_userno = #{userno}
+    </select>
+
+    <select id="checkMyBoard" parameterType="com.project.poinhanshin.domain.member.MyPageDto" resultType="int">
+        SELECT COUNT(*)
+        FROM mypage
+        WHERE mypage_userno = #{mypage_userno}
+        and
+        <choose>
+            <when test="mypage_boardno != null">
+                mypage_boardno = #{mypage_boardno}
+            </when>
+            <when test="mypage_protectboardno != null">
+                mypage_protectboardno = #{mypage_protectboardno}
+            </when>
+            <when test="mypage_mapboardno != null">
+                mypage_mapboardno = #{mypage_mapboardno}
+            </when>
+        </choose>
+    </select>
+    <insert id="insertFavorite" parameterType="com.project.poinhanshin.domain.member.MyPageDto">
+        INSERT INTO mypage (mypage_userno , mypage_boardno , mypage_protectboardno  , mypage_mapboardno , favorites)
+        VALUES (#{mypage_userno} , #{mypage_boardno} , #{mypage_protectboardno} , #{mypage_mapboardno} , #{favorites})
+    </insert>
+    <delete id="deleteFavorite" parameterType="com.project.poinhanshin.domain.member.MyPageDto">
+        DELETE
+        FROM mypage
+        WHERE mypage_userno = #{mypage_userno}
+        and
+        <choose>
+            <when test="mypage_boardno != null">
+                mypage_boardno = #{mypage_boardno}
+            </when>
+            <when test="mypage_protectboardno != null">
+                mypage_protectboardno = #{mypage_protectboardno}
+            </when>
+            <when test="mypage_mapboardno != null">
+                mypage_mapboardno = #{mypage_mapboardno}
+            </when>
+        </choose>
+    </delete>
+</mapper>

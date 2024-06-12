@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" script type="text/css" href="/css/mypage/mypage.css"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+    <meta charset="UTF-8">
+    <title>회원정보 수정</title>
+    <style>
+        /* 스타일을 여기에 추가하세요. */
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f4f4f4;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #2470dc;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1959b7;
+        }
+
+        .back-button {
+            background-color: #ccc;
+            color: #000;
+        }
+
+        .back-button:hover {
+            background-color: #999;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>회원정보 수정</h2>
+    <form id="profileForm" action="/modifyPage" method="post">
+        <input type="hidden" name="userno" th:value="${loginUser.userno}">
+        <div class="form-group">
+            <label for="id">아이디:</label>
+            <input type="text" id="id" name="id" placeholder="아이디를 입력하세요" th:value="${loginUser.id}" readonly style="background-color: lightgray">
+        </div>
+        <div class="form-group">
+            <label for="password">비밀번호:</label>
+            <input type="text" id="password" name="password" placeholder="비밀번호를 입력하세요" th:value="${loginUser.password}" required>
+        </div>
+        <div class="form-group">
+            <label for="name">이름:</label>
+            <input type="text" id="name" name="name" placeholder="이름을 입력하세요" th:value="${loginUser.name}" required>
+        </div>
+        <div class="form-group">
+            <label for="age">나이:</label>
+            <input type="text" id="age" name="age" placeholder="나이를 입력하세요" th:value="${loginUser.age}" required>
+        </div>
+        <div class="form-group">
+            <label for="phnum">전화번호:</label>
+            <input type="text" id="phnum" name="phnum" placeholder="전화번호를 입력하세요" th:value="${loginUser.phnum}" required>
+        </div>
+        <div class="form-group">
+            <label for="mail">이메일:</label>
+            <input type="text" id="mail" name="mail" placeholder="이메일을 입력하세요" th:value="${loginUser.mail}" required>
+        </div>
+        <div class="form-group">
+            <label for="address">주소:</label>
+            <input type="text" id="address" name="address" placeholder="주소를 입력하세요" th:value="${loginUser.address}" required>
+        </div>
+    </form>
+    <button class="btn-primary mb-1" style="display: block; margin: 0 auto;" id="formbtn"  type="button">저장</button>
+    <button class="back-button" onclick="window.location.href='/profilePage' ">돌아가기</button>
+</div>
+
+<script>
+    $('#formbtn').on("click",function(){
+        if(!confirm("회원 정보를 수정하시겠습니까 ?")) {
+            //event.preventDefault()
+            return;
+        }
+        let form = $('#profileForm');
+        form.submit();
+    });
+</script>
+</body>
+</html>

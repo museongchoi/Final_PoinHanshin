@@ -1,0 +1,54 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+
+.profile-image {
+    width: 100%;
+}
+
+.mynav1 {
+    border-top: 3px solid rgba(0, 0, 0, 0.36);
+}
+
+.mynav {
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.gallery-container {
+    max-width: 800px; /* Adjust the maximum width as needed */
+    margin: 0 auto; /* Center the container horizontally */
+}
+
+.gallery-container {
+     max-width: 800px; /* Adjust the maximum width as needed */
+     margin: 0 auto; /* Center the container horizontally */
+ }
+
+/* Style the image gallery list */
+.image-gallery {
+    list-style: none;
+    padding: 0;
+    display: grid; /* Use CSS Grid for the tile layout */
+    grid-template-columns: repeat(2, 1fr); /* Create a grid with 2 columns */
+    grid-gap: 20px; /* Add space between tiles */
+}
+
+/* Style individual gallery items (tiles) */
+.image-gallery li {
+    border: 2px solid #ccc; /* Add a border around tiles */
+}
+
+/* Style images within tiles */
+.image-gallery img {
+    max-width: 100%; /* Ensure images don't exceed their tile */
+    height: auto; /* Maintain image aspect ratio */
+}

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>게시글리스트</title>
+    <link href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" rel="stylesheet">
+    <link href="/css/commonstyle.css" rel="stylesheet">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
+   <script
+  src="https://code.jquery.com/jquery-3.7.0.slim.js"
+  integrity="sha256-7GO+jepT9gJe9LB4XFf8snVOjX3iYNb0FHYr5LI1N5c="
+  crossorigin="anonymous"></script>
+
+   </style>
+</head>
+<body layout:fragment="content">
+<script th:if="${msg} == 'SUCCESS_REMOVE'">alert("게시글을 삭제했습니다.")</script>
+<script th:if="${msg} == 'NO_LOGIN'"> alert("로그인이 필요합니다.")</script>
+<div class="page">
+
+        <div class="">
+
+            <form action="/protectboard/list" method="get" name="searchForm" id="searchForm" class="row">
+
+                <div class="col-sm-4">
+                    <div class="btn-group" role="group">
+                        <input type="radio" name="ani_category" value="2" class="btn-check" id="all-check" autocomplete="off" th:checked="${sc.ani_category eq 2}">
+                        <label class="btn btn-outline" for="all-check" style="background-color:#9C9EFE;">전체</label>
+
+                        <input type="radio" name="ani_category" value="0" class="btn-check" id="dog-check" autocomplete="off" th:checked="${sc.ani_category eq 0}">
+                        <label class="btn btn-outline" for="dog-check" style="background-color:#9C9EFE;">강아지</label>
+
+                        <input type="radio" name="ani_category" value="1" class="btn-check" id="cat-check" autocomplete="off" th:checked="${sc.ani_category eq 1}">
+                        <label class="btn btn-outline" for="cat-check" style="background-color:#9C9EFE;">고양이</label>
+                    </div>
+                </div>
+                <div class="col-sm-4" id="spacer"></div>
+
+                <div class="col-sm-4">
+
+                    <div class="input-group">
+                        <div class="input-group-text" id="btnGroupAddon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                        </div>
+                        <input type="hidden" name="page" th:value="${sc.getPage()}"/>
+                        <input type="hidden" name="pageSize" th:value="${sc.getPageSize()}"/>
+
+                        <input type="text" name="keyword" class="form-control" placeholder="Input group example" aria-label="Input group example" aria-describedby="btnGroupAddon">
+                        <input type="button" id="searchBtn" class="btn btn-outline-primary" value="검색">
+                    </div>
+
+                </div>
+
+            </form>
+            <div class="row">
+                <div class="col-sm-12 p-2">
+                    <div class="btn-group float-end" role="group"aria-label="Basic outlined example">
+                        <button type="button" class="btn btn-outline" style="background-color:#9C9EFE;"
+                                th:onclick="|location.href='@{/protectboard/write(page = ${sc.getPage} , pageSize = ${sc.getPageSize} , keyword=${sc.getKeyword})}'|">
+                            글작성
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4 p-2" th:each="protectboard : ${list}">
+                <div class="card" id="pcard">
+                    <a th:href="@{/protectboard/read(protectboardno=${protectboard.protectboardno}, page=${sc.getPage()} , pageSize=${sc.getPageSize()} , keyword=${sc.getKeyword()} )}">
+                        <div class="card-header">
+                            <span th:if="${protectboard.protectboard_ani_category == false}" class="badge rounded-pill" style="font-size: 16px;background-color:#AFB4FF;">강아지</span>
+                            <span th:if="${protectboard.protectboard_ani_category == true}" class="badge rounded-pill" style="font-size: 16px;background-color:#AFB4FF;">고양이</span>
+
+                            <img th:if="${protectboard.fileAttached == 1 ? protectboard.storedFileName[0] != null : false}" th:src="@{|/upload/protectboard/${protectboard.storedFileName[0]}|}" class="card-img-top" width="150px" height="150">
+                            <img th:unless="${protectboard.fileAttached == 1}" src="/img/empty.png" class="card-img-top">
+                        </div>
+                        <div class="card-body">
+                            <span class="badge rounded-pill text-bg-primary card-text" th:text="${protectboard.breeds}" style="font-size: 16px;">강아지</span>
+<!--                            <span th:if="${#bools.isTrue(protectboard.protectstatus)}" class="badge rounded-pill text-bg-success " style="font-size: 16px;">완료</span>-->
+<!--                            <span th:if="${#bools.isFalse(protectboard.protectstatus)}" class="badge rounded-pill text-bg-info " style="font-size: 16px;">공고중</span>-->
+                            <span class="badge rounded-pill text-danger" th:id="D + ${protectboard.protectboardno}" style="font-size: 16px;"></span>
+                            <span class="badge rounded-pill text-bg-success" th:id="E + ${protectboard.protectboardno}" style="font-size: 16px;"></span>
+                            <span class="badge rounded-pill text-bg-warning" th:text="|${#dates.format(protectboard.starttime, 'MM-dd')} ~ ${#dates.format(protectboard.deadline, 'MM-dd')}|"> 남은날짜 : 2023-08-01</span>
+                            <p class="card-text" th:text="${#strings.abbreviate(protectboard.protectboard_title,25)}">제목</p>
+                            <!--<p class="card-text" th:text="${protectboard.protectboard_content}">내용</p>-->
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    <div class="ph-wrapper">
+        <div class="text-center" th:if="${totalCnt == 0}">게시물이 없습니다.</div>
+        <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+            <div class="btn-group m-auto btn-group-sm" role="group" aria-label="First group">
+                <button type="button" style="width:30px;height:40px;" class="btn btn-primary" th:if="${ph.showPrev}" th:onclick="|location.href='@{'/protectboard/list'+${ph.sc.getQueryString(ph.beginPage - 1)}}'|">&lt;</button>
+                <th:block th:if="${not #strings.isEmpty(ph.totalCnt)}" th:each="i : ${#numbers.sequence(ph.beginPage,ph.endPage)}">
+                    <button th:if="${i !=0}" type="button" style="width:30px;height:40px" class="btn btn-secondary" th:class="${ph.sc.page == i ? 'btn btn-primary' : 'btn btn-secondary'}" th:onclick="|location.href='@{'/protectboard/list'+${ph.sc.getQueryString(i)}}'|" th:text="${i}"></button>
+                </th:block>
+                <button type="button" style="width:30px;height:40px" class="btn btn-primary" th:if="${ph.showNext}" th:onclick="|location.href='@{'/protectboard/list'+${ph.sc.getQueryString(ph.endPage + 1)}}'|">&gt;</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+        $('#searchBtn').on("click",function(){
+            let form = $('#searchForm');
+            form.submit();
+        });
+
+        $('input[name=ani_category]').on("click" , function(){
+            let form = $('#searchForm');
+            form.submit();
+        });
+
+
+
+//D-day 남은날짜 계산
+
+    const boardList = [[${list}]];//타임리프 객체 변수
+
+    //console.log(boardList[0].deadline);
+
+boardList.forEach(function(board){
+
+       const deadline = board.deadline;
+       const count_id = board.protectboardno;
+
+        const d_day = document.querySelector(`#D${count_id}`);
+        const d_stat = document.querySelector(`#E${count_id}`);
+
+        const formatted_End_Date = deadline.slice(0,10);//ISO 8601타입 뒷부분 자르기용
+        const end_date = new Date(formatted_End_Date);
+
+
+        //현재시간 추출용
+        const now = new Date();
+        const formatted_Date = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;//yyyy-MM-dd 형식
+        const today_date = new Date(formatted_Date);//Date로 변환
+
+
+        //const test_date = new Date("2023-07-01");
+
+        const diff = end_date.getTime() - today_date.getTime();
+
+        let diffDay = Math.floor(diff / (1000*60*60*24));
+
+        //남은 날짜가 음수인경우 0
+            if(diffDay < 0) {
+                diffDay = "0";
+                d_day.innerText=`공고완료`;
+            }else{
+                d_day.innerText=`D-${diffDay}일`;
+                d_stat.innerText=`공고 중`;
+            }
+
+<!--            console.log(deadline.slice(0,10));-->
+<!--            console.log(count_id);-->
+<!--            console.log(end_date);-->
+<!--            console.log(now)-->
+<!--            console.log(diff);-->
+
+    });
+
+
+    /*]]>*/
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- sns share -->
+  <meta property="og:url" content="https://" />
+  <meta property="og:title" content="재미로 보는 mbti" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="../img/share.png" />
+  <meta property="og:description" content="재미로 보는 mbti" />
+
+  <!--favicon-->
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <link rel="apple-touch-icon-precomposed" href="../img/favicon.ico" />
+
+  <title>재미로 보는 mbti</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Black+Han+Sans:400" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic+Coding:400" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic:800" rel="stylesheet">
+  <link rel="stylesheet" href="/css/mbti/default.css">
+  <link rel="stylesheet" href="/css/mbti/result.css">
+</head>
+<body>
+<section id="shareResult" class="mx-auto my-5 py-5 px-3">
+  <h1>당신의 결과는?!</h1>
+  <div class="resultname">
+    <p>열정적인 리더</p>
+    <div id="hyperLinkContainer" >
+      <div th:each=" AnimalData : ${AnimalDatas}" >
+        <a th:href="@{/api/AnimalList(kind = ${AnimalData.kindCd})}" th:text="${AnimalData.animalname}"></a>
+      </div>
+    </div>
+  </div>
+  <div id="resultImg" class="my-3 col-lg-6 col-md-8 col-sm-10 col-12 mx-auto">
+    <img src="/img/mbti/image-13.png" alt="0" class="img-fluid">
+  </div>
+  <p>ENFJ</p>
+  <div class="resultDesc">
+    <p>열정적이고 리더십을 발휘하는 당신!  주변 사람들과의 유대 관계를 중요하게 생각하며, 타인을 도울 때 큰 만족감을 느낍니다. 사회적 변화를 위해 행동하고 다양한 역할을 맡는 것을 즐깁니다. 자신의 목표와 가치에 충실하면서도 때로는 과도한 완벽주의나 부담을 느낄 수 있습니다. 이러한 특성을 관리하면서 더 나은 조화롭고 효과적인 리더십 스타일을 발전시키는 법을 익혀보세요! '
+    </p>
+  </div>
+  <script type="text/javascript">
+    function moveHome(){
+      location.href = "/MBTI/main";
+    }
+  </script>
+  <button type="button" class="gohome mt-3 py-2 px-3" onclick="moveHome()">홈으로</button>
+</section>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>마이페이지</title>
+</head>
+<body>
+<h1>마이페이지</h1>
+<button type="button" id="modifyUser" onclick="window.location.href='/modifyPage';">회원정보수정</button>
+
+<form method="post" th:action="@{/dismiss}">
+<input type="hidden" name="userno" th:value="${loginUser.userno}">
+<button type="submit" id="dismiss"><span style="color: red;">탈퇴</span></button>
+</form>
+<button onclick="window.location.href='/'">내가 작성한 글</button><br>
+<button onclick="window.location.href='/'">게시판 즐겨찾기</button><br>
+<button onclick="window.location.href='/'">임보자 공고 즐겨찾기</button><br>
+<button onclick="window.location.href='/'">실종/발견 지도 즐겨찾기</button><br>
+</body>
+</html>

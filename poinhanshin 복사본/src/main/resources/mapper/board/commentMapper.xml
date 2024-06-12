@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poinhanshin.mapper.board.CommentMapper">
+    <select id="selectComment" parameterType="int" resultType="com.project.poinhanshin.domain.board.CommentDto">
+        Select u.id, b.boardcomment_boardno , b.boardcomment_userno , b.commentno , ifnull(b.parcommentno , b.commentno) as parcommentno, b.comment ,boardcomment_reg_date
+        From boardcomment b, users u, board board
+        Where b.boardcomment_userno = u.userno and b.boardcomment_boardno = board.boardno and boardcomment_boardno = #{commentno}
+        ORDER BY parcommentno ASC , b.commentno ASC;
+    </select>
+
+    <delete id="deleteComment" parameterType="map">
+        Delete From boardcomment
+        Where  boardcomment_userno = #{loginUser} and commentno = #{commentno}
+    </delete>
+
+    <insert id="insertContent" parameterType="com.project.poinhanshin.domain.board.CommentDto">
+        Insert Into boardComment ( boardcomment_boardno , boardcomment_userno , commentno , parcommentno , comment ,boardcomment_reg_date )
+        Values (#{boardcomment_boardno} , #{boardcomment_userno} , #{commentno} , #{parcommentno} , #{comment} , now() )
+    </insert>
+
+    <update id="updateComment" parameterType="com.project.poinhanshin.domain.board.CommentDto">
+        Update boardcomment
+        SET comment = #{comment}
+        Where commentno = #{commentno} and boardcomment_userno = #{boardcomment_userno}
+    </update>
+</mapper>
+
